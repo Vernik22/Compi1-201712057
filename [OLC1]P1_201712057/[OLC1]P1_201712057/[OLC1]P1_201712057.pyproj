@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>6a94e84a-6c9b-454d-ad5e-5e4412182758</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>_OLC1_P1_201712057.py</StartupFile>
+    <StartupFile>Mein.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,6 +21,21 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AnalisisLexicoCss.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AnalisisLexicoHtml.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AnalisisLexicoJs.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Grafico.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Mein.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="_OLC1_P1_201712057.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
