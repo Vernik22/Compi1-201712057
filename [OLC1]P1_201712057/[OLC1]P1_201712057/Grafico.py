@@ -56,8 +56,17 @@ class Grafico:
 
         self.ventana.mainloop()
 
+    
     def abrir(self) :
-        print("hello")
+        self.txtEntrada.delete('1.0',END)           #Limpia el area de texto
+        self.archivo = filedialog.askopenfilename() #archivo es la Path
+        self.arch_open = open(self.archivo, 'r')    #se abre el archivo
+        self.texto= self.arch_open.read()      #texto ya contiene todas las lineas de texto
+        self.arch_open.seek(0)      #pone el puntero de nuevo en el inicio
+        print(self.texto)
+       
 
- 
+        self.txtEntrada.insert(END,self.texto)
+        self.arch_open.close()
+    
     
