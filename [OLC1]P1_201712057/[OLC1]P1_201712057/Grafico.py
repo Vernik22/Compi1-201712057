@@ -39,11 +39,21 @@ class Grafico:
         self.ventana.config(menu=self.menu)
 
         self.txtEntrada = Entry(self.ventana,width=10)
+        self.labelEntrada = Label(self.ventana, text='Entrada',bg='#F5A903')
         self.txtConsola = Entry(self.ventana,width=10)
+        self.labelConsola = Label(self.ventana,text='Consola',bg='#F5A903')
 
-        self.txtEntrada = scrolledtext.ScrolledText(self.ventana, width=115,height=25)
+        self.txtEntrada = scrolledtext.ScrolledText(self.ventana, width=115,height=18)
         self.txtEntrada.place(x=12, y=20)
+        self.labelEntrada.place(x=12, y=1)
         
+        self.txtConsola = scrolledtext.ScrolledText(self.ventana, width=115,height=10)
+        self.txtConsola.place(x=12, y=390)
+        self.labelConsola.place(x=12, y=370 )
+
+        self.analiButton = Button(self.ventana, text= 'Analizar', padx= 25, pady=12, bg= 'grey',fg='white')
+        self.analiButton.place(x=455, y=335)
+
         self.ventana.mainloop()
 
     def abrir(self) :
