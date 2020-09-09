@@ -1,0 +1,53 @@
+ER para:
+rutas
+comentarios [unilinea y multilinea]: 
+ids/ variables
+asignacion
+declaracion
+if
+for
+while
+do... while
+metodos y funciones
+parametros
+clases 
+constructor
+sentencias
+
+Expresiones 
+
+simbolos : cualquier simbolo= / * @ ' ...
+*****************-****************************-**************************-************-****
+ER:
+1.comentario unilinea:  '/'.'/' [letra|digito|simbolo]*
+2.comentario multilinea '/''*' [letra|digito|simbolo]* '*''/'
+3.id                    letra [letra|digito|'-'|'.'|'_']*
+*Cadena                 [letra|digito|simbolo]*
+4.asignacion/declaracion   '='
+5.if                    if '(' '!'? [[id|digito+]+ [==|!=|>|<|>=|<=]? [&&|'||']?] ')' '{'[Sentencias]*'}'  
+6.else                  else if? '{' [Sentencias]* '}'
+7.print                 console.log'(' "[Cadena]" ')'
+8.Sentencias            [Declaracion|Asignacion|if|while|print|comentarios|]';'
+9.for                   for'('[asignacion]';'[id][==|!=|>|<|>=|<=] [id][++|--]')''{'[Sentencias] '}'
+10.while                while ([id][==|!=|>|<|>=|<=][id|digito]')''{' [Sentencias] '}'
+11.do...while           do [Sentencias] [while]
+12.Metodos/funciones    [function|id:function|id.id|constructor]([Parametros]) ['{'|=>] [Sentencias] ['}'|);]
+*Parametros             [letra|digito|,]*
+13.clase                class id {[Sentencias] }
+ 
+
+
+palabras reservadas:---------
+var
+continiu
+break
+return
+if
+else
+for
+while 
+do
+function
+class
+constructor
+null

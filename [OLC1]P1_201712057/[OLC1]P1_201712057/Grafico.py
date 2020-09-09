@@ -16,7 +16,15 @@ class Grafico:
         self.menu = Menu(self.ventana)
 
         self.archivo_item = Menu(self.ventana)
-        self.archivo_item.add_command(label="Abrir Archivo", command=self.abrir)
+        self.archivo_item.add_command(label="Nuevo", command=self.abrir)
+        self.archivo_item.add_separator()
+        self.archivo_item.add_command(label="Abrir", command=self.abrir)
+        self.archivo_item.add_separator()
+        self.archivo_item.add_command(label="Guardar", command=self.abrir)
+        self.archivo_item.add_separator()
+        self.archivo_item.add_command(label="Guardar Como", command=self.abrir)
+        self.archivo_item.add_separator()
+        self.archivo_item.add_command(label="Ejecutar Analisis", command=self.abrir)
         self.archivo_item.add_separator()
         self.archivo_item.add_command(label="Salir", command=self.ventana.destroy)
 
@@ -59,14 +67,16 @@ class Grafico:
     
     def abrir(self) :
         self.txtEntrada.delete('1.0',END)           #Limpia el area de texto
-        self.archivo = filedialog.askopenfilename() #archivo es la Path
-        self.arch_open = open(self.archivo, 'r')    #se abre el archivo
-        self.texto= self.arch_open.read()      #texto ya contiene todas las lineas de texto
-        self.arch_open.seek(0)      #pone el puntero de nuevo en el inicio
-        print(self.texto)
+        self.archivo = filedialog.askopenfilename(filetypes=[("Archivos Aceptados",".css .js .html .rmt"),("CSS","*.css"),("JavaScript","*.js"),("HTML",".html"),("Aritmetico JS",".rmt")]) #archivo es la Path
+        if self.archivo != '':
+            self.arch_open = open(self.archivo, 'r')    #se abre el archivo
+            self.texto= self.arch_open.read()      #texto ya contiene todas las lineas de texto
+            self.txtEntrada.insert(END,self.texto)
+            self.arch_open.close()
+        
+        #self.arch_open.seek(0)      #pone el puntero de nuevo en el inicio
+        #print(self.texto)
        
-
-        self.txtEntrada.insert(END,self.texto)
-        self.arch_open.close()
+        
     
     

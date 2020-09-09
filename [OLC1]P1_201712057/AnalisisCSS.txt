@@ -1,0 +1,67 @@
+
+ER Para:
+Comentarios [Unilinea y Multilinea]
+Ids/Selector
+Reglas ';' y la ultima regla puede o no tener ';'
+valor:
+    medidas: px, em, vh, vw, in, cm, mm, pt, pc
+    identificadores
+    porcentajes
+    colores red
+            #fF0000
+            rgba(255,0,0);
+    url
+    cadenas
+
+simbolos : cualquier simbolo= / * @ ' ...
+*****-*************-*************-***************-**************-************-*********
+ER: 
+1. uni y multi: */ [digito|letra|simbolo|espacio]* */#
+2. id:          letra [letra|digito|'-']* #
+3. selector     [letra|digito|'-']* [:|::|#|.|*]* [letra|digito|'-']* #
+                '.' #
+                '#' #
+                ':' #
+                '::' #
+                '(' #
+                ')' #
+                '"' #
+                ';' #
+                ',' #
+                '*' #
+5.              '{' #
+6.              '}' #
+cadenas         " [letra|digito|simbolo]+ " #               
+4. reglas       [[letra|-]+ ':'  [
+                -? digito+ '.'? digito* %? [letra|digito|'-']* #|
+                 # [letra|digito]+ #|
+
+PENDIENTE               [digito|','|letra|simbolo]+ #|
+                
+
+
+res_valor: px, em, vh, vw, in, cm, mm, pt, pc, rem
+Palabras reservadas
+palabras para las reglas
+
+color background-color background-image
+border Opacity background
+text-align font-family font-style
+font-weight font-size font
+padding-left padding-right padding-bottom
+padding-top padding display
+line-height width height
+margin-top margin-right margin-bottom
+margin-left margin border-style
+display position bottom
+top right left
+float clear max-width
+min-width max-height min-height
+
+-----------------------------------------------------------------------
+
+*/ [digito|letra|simbolo|espacio]* */#      COMENTARIOS
+letra [letra|digito|'-']* #    VERIFICAR RESERVADA
+simbolo #                       SIMBOLOS VALIDOS
+-? digito+ '.'? digito* %?  #    VERIFICAR DIGITOS
+" [letra|digito|simbolo]+ " #          CADENAS

@@ -1,0 +1,7 @@
+
+ER para:
+etiquetas
+cadenas
+imagenes        *
+hipervinculos   *
+estilos         *
