@@ -51,3 +51,17 @@ function
 class
 constructor
 null
+
+
+----------------------------------------------------------------------------
+Comentarios '/'.'/' [letra|digito|simbolo]* #
+            '/''*' [letra|digito|simbolo]* '*''/' #
+ids         letra [letra|digito|'-'|'_']* #
+simbolos    simbolo #
+Cadenas     ["|'|`] [letra|digito|simbolo]+ ["|'|`] # 
+numeros     -? digito+ '.'? digito* #
+
+
+--------------------
+simbolos aceptados 
+/ * : ; . " +  - =  &   |   () {} []  < > '  ` !

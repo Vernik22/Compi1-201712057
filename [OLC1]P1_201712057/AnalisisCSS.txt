@@ -60,7 +60,7 @@ min-width max-height min-height
 
 -----------------------------------------------------------------------
 
-*/ [digito|letra|simbolo|espacio]* */#      COMENTARIOS
+/* [digito|letra|simbolo|espacio]* */#      COMENTARIOS
 letra [letra|digito|'-']* #    VERIFICAR RESERVADA
 simbolo #                       SIMBOLOS VALIDOS
 -? digito+ '.'? digito* %?  #    VERIFICAR DIGITOS
