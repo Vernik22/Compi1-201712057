@@ -3,6 +3,7 @@ from tkinter import Menu    #menu
 from tkinter import filedialog      # filechooser
 from tkinter import scrolledtext    # textarea
 from tkinter import messagebox      # message box
+from AnalisisLexicoCss import ScannerCss
 
 class Grafico:
 
@@ -59,7 +60,7 @@ class Grafico:
         self.txtConsola.place(x=12, y=390)
         self.labelConsola.place(x=12, y=370 )
 
-        self.analiButton = Button(self.ventana, text= 'Analizar', padx= 25, pady=12, bg= 'grey',fg='white')
+        self.analiButton = Button(self.ventana, text= 'Analizar', padx= 25, pady=12, bg= 'grey',fg='white', command = self.analisar)
         self.analiButton.place(x=455, y=335)
 
         self.ventana.mainloop()
@@ -76,7 +77,16 @@ class Grafico:
         
         #self.arch_open.seek(0)      #pone el puntero de nuevo en el inicio
         #print(self.texto)
-       
+
+    def analisar(self):
+        entrada = self.txtEntrada.get('1.0', END)
+        scaner = ScannerCss()
+        retorno = scaner.estadoA(entrada)
+        self.txtConsola.delete('1.0',END)   
+        self.txtConsola.insert('1.0',retorno)
+        messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
+
+    
         
     
     
