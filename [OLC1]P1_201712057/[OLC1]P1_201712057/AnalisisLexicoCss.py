@@ -91,9 +91,10 @@ class ScannerCss :
 
             #otros
             elif self.caracterActual == " " or self.caracterActual == "\t" or self.caracterActual == "\r" or self.caracterActual == "\n":  
-                self.posicionCar += 1 #incremento del contador del while
                 if self.caracterActual=="\n":
                     self.fila += 1
+                self.posicionCar += 1 #incremento del contador del while
+                
                 continue
 
             #manejo de Errores

@@ -51,6 +51,14 @@ function
 class
 constructor
 null
+delete 
+TRUE
+FALSE
+NEW
+UNDEFINED
+TYPEOF
+VOID
+console
 
 
 ----------------------------------------------------------------------------
@@ -64,4 +72,4 @@ numeros     -? digito+ '.'? digito* #
 
 --------------------
 simbolos aceptados 
-/ * : ; . " +  - =  &   |   () {} []  < > '  ` !
+/ * : ; . " +  - =  &   |   () {} []  < > '  ` ! ~
