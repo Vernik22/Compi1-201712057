@@ -319,6 +319,9 @@ class ScannerCss :
         if c== '/':
             self.addToken(Tipo.DIAGONAL, "/")
             self.posicionCar += 1
+            c=self.cadena[self.posicionCar]
+            if c=="\n":
+                    self.fila += 1
            # for i in range(0,len(self.listaTokens)):
            #    valor = self.listaTokens[i].getValor()
            #   print(valor)
@@ -338,6 +341,8 @@ class ScannerCss :
     def getSizeComentario(self, posInicial):
         longitud = 0
         for i in range(posInicial, len(self.cadena)-1):
+            if self.cadena[i]=="\n":
+                    self.fila += 1
             if self.cadena[i] == "*" and self.cadena[i+1] == "/":
                 break
             longitud+=1
@@ -346,6 +351,8 @@ class ScannerCss :
     def getSizeCadena(self, posInicial):
         longitud = 0
         for i in range(posInicial, len(self.cadena)-1):
+            if self.cadena[i]=="\n":
+                    self.fila += 1
             if self.cadena[i] == "\"" :
                 break
             longitud+=1
