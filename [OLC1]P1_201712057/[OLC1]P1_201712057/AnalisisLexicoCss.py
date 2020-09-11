@@ -1,6 +1,7 @@
 from TokenCss import Token
 from TokenCss import Tipo
 from TokenCss import Error
+from tkinter import *
 
 class ScannerCss :
     listaTokens = list()
@@ -28,7 +29,7 @@ class ScannerCss :
         return self.bitacora
 
     #----------------------estado A 
-    def estadoA(self,entrada):
+    def estadoA(self,entrada, consola):
         self.cadena = entrada + "$"
         self.caracterActual = ""
 
@@ -40,49 +41,61 @@ class ScannerCss :
             #estado A a estado B para comentarios
             if self.caracterActual == "/":
                # self.addToken(Tipo.DIAGONAL, "/")  #mandar a estado B por comentario
-                self.estadoB(self.posicionCar)
+                self.estadoB(self.posicionCar, consola)
             elif self.caracterActual == "{":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.LLAVEIZQ, "{")
             elif self.caracterActual == "}":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.LLAVEDER, "}")
             elif self.caracterActual == ":":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.DPUNTOS, ":")
             elif self.caracterActual == ";":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.PCOMA, ";")
             elif self.caracterActual == ",":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.COMA, ",")
             elif self.caracterActual == ".":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.PUNTO, ".")
             elif self.caracterActual == "#":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.NUMERAL, "#")
             elif self.caracterActual == "(":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.PARENTESISIZQ, "(")
             elif self.caracterActual == ")":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.PARENTESISDER, ")")
             elif self.caracterActual == '"':
                 self.addToken(Tipo.COMILLAS, '"')
                 self.posicionCar+=1
                 sizeCadena= self.getSizeCadena(self.posicionCar)
-                self.estadoE(self.posicionCar,self.posicionCar+sizeCadena)
+                self.estadoE(self.posicionCar,self.posicionCar+sizeCadena, consola)
                 self.posicionCar = self.posicionCar + sizeCadena
-                self.estadoI(self.posicionCar)
+                self.estadoI(self.posicionCar, consola)
             elif self.caracterActual == "*":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.ASTERISCO, "*")
             elif self.caracterActual == "-":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.GUION, "-") #mandar a estado F por numero negativo
             elif self.caracterActual == "%":
+                self.bitacora +=" ->estadoD"
                 self.addToken(Tipo.PORCENTAJE , "%")
 
             #estado A a estado G (Numeros)
             elif self.caracterActual.isnumeric():            
                 sizeLexema = self.getSizeLexema(self.posicionCar)
-                self.estadoG(self.posicionCar,self.posicionCar+sizeLexema)
+                self.estadoG(self.posicionCar,self.posicionCar+sizeLexema , consola)
                 self.posicionCar = self.posicionCar + sizeLexema
 
             #estado A a estado C (Reservadas e IDs)
             elif self.caracterActual.isalpha():
                 sizeLexema = self.getSizeLexema(self.posicionCar)
-                self.estadoC(self.posicionCar,self.posicionCar+sizeLexema)
+                self.estadoC(self.posicionCar,self.posicionCar+sizeLexema, consola)
                 #self.reservadas(posicionCar, posicionCar+sizeLexema)
                 self.posicionCar = self.posicionCar + sizeLexema
 
@@ -108,6 +121,7 @@ class ScannerCss :
                 else:
                     self.addError(self.columna,self.fila, self.caracterActual)
                     print("Error Lexico: ", self.caracterActual)
+                    consola.insert('1.0', "Error Lexico: "+self.caracterActual+"\n")
                     for i in range(0,len(self.listaErrores)):
                         valor = self.listaErrores[i].getValor()
                         valor += str(self.listaErrores[i].getColumna())
@@ -122,7 +136,7 @@ class ScannerCss :
             return "La entrada que ingresaste fue:" + self.cadena + "\n Analisis Exitoso"
 
     #-----------------------estado B
-    def estadoB(self,posActual):
+    def estadoB(self,posActual,consola):
         c=self.cadena[posActual+1]
         self.bitacora += "->estadoB"
         if c == '*':
@@ -131,17 +145,19 @@ class ScannerCss :
             self.posicionCar = posActual+2
             sizeComentario= self.getSizeComentario(self.posicionCar)
             #print("pasa por B con "+c)
-            self.estadoH(self.posicionCar, self.posicionCar+sizeComentario)
+            self.estadoH(self.posicionCar, self.posicionCar+sizeComentario, consola)
             self.posicionCar = self.posicionCar +sizeComentario
             #print("va a L con "+c)
-            self.estadoL(self.posicionCar)
+            self.estadoL(self.posicionCar, consola)
         else:
             self.pos_errores.append(posActual)
-            print("Error Lexico",c)
+            self.addError(self.columna,self.fila, c)
+            print("Error Lexico: ", c)
+            consola.insert('1.0', "Error Lexico: "+c+"\n")
         
 
     #-----------------------estado c
-    def estadoC(self, posActual, fin):
+    def estadoC(self, posActual, fin, consola):
         c=''
         while posActual < fin:
             c= self.cadena[posActual]
@@ -174,12 +190,14 @@ class ScannerCss :
                     self.lexema = ""
             else:
                 self.pos_errores.append(posActual)
-                print("Error Lexico ",c)
+                self.addError(self.columna,self.fila, c)
+                print("Error Lexico: ", c)
+                consola.insert('1.0', "Error Lexico: "+c+"\n")
 
         
             posActual += 1
     #-----------------------estado E
-    def estadoE(self, posActual, fin):
+    def estadoE(self, posActual, fin, consola):
         c=''
         while posActual < fin:
             self.bitacora += "->estadoE"
@@ -193,7 +211,7 @@ class ScannerCss :
             posActual += 1
 
     #-----------------------estado G
-    def estadoG(self, posActual, fin):
+    def estadoG(self, posActual, fin, consola):
         c=''
         while posActual < fin:            
             c= self.cadena[posActual]
@@ -208,11 +226,11 @@ class ScannerCss :
                 #mandar al estado J
                 self.lexema += c
                 posActual += 1
-                self.estadoJ(posActual,fin)
+                self.estadoJ(posActual,fin, consola)
                 break
             elif c =='%':
                 #mandar al estado K
-                self.estadoK(posActual,fin)
+                self.estadoK(posActual,fin, consola)
                 
             elif c.isalpha():
                 self.addToken(Tipo.NUMERO, self.lexema)
@@ -222,11 +240,13 @@ class ScannerCss :
             # estadoG -> Error Lexico o manejar los hexadecimales
             else:
                 self.pos_errores.append(posActual)
-                print("Error Lexico ",c)
+                self.addError(self.columna,self.fila, c)
+                print("Error Lexico: ", c)
+                consola.insert('1.0', "Error Lexico: "+c+"\n")
             
             posActual += 1
     #-----------------------estado H
-    def estadoH(self, posActual, fin):
+    def estadoH(self, posActual, fin, consola):
         c=''
         while posActual < fin:
             c= self.cadena[posActual]
@@ -241,7 +261,7 @@ class ScannerCss :
             posActual += 1
 
     #-----------------------estado I
-    def estadoI(self, posActual):
+    def estadoI(self, posActual, consola):
         c=self.cadena[posActual]
         self.bitacora += "->estadoI"
         if c == '"':
@@ -253,7 +273,7 @@ class ScannerCss :
             
 
     #-----------------------estado J
-    def estadoJ(self, posActual, fin):
+    def estadoJ(self, posActual, fin, consola):
         c=''
         while posActual < fin:
             c= self.cadena[posActual]
@@ -268,23 +288,29 @@ class ScannerCss :
             elif c.isalpha():
                 self.addToken(Tipo.NUMERO, self.lexema)
                 self.lexema = ""
-                self.posicionCar = posActual
+                #self.posicionCar = posActual
+                numero = self.posicionCar 
+                resta= posActual
+                num = numero - resta
+                self.posicionCar += num
                 break
 
             elif c =='%':
                 #mandar al estado K
-                self.estadoK(posActual,fin)
+                self.estadoK(posActual,fin, consola)
 
             # estadoG -> Error Lexico o manejar los hexadecimales
             else:
                 self.pos_errores.append(posActual)
-                print("Error Lexico ",c)
+                self.addError(self.columna,self.fila, c)
+                print("Error Lexico: ", c)
+                consola.insert('1.0', "Error Lexico: "+c+"\n")
 
 
             posActual += 1
 
     #-----------------------estado K
-    def estadoK(self, posActual, fin):
+    def estadoK(self, posActual, fin, consola):
         c=''
         while posActual < fin:
             c= self.cadena[posActual]
@@ -297,24 +323,32 @@ class ScannerCss :
             
             else:
                 self.pos_errores.append(posActual)
-                print("Error Lexico ",c)
+                self.addError(self.columna,self.fila, c)
+                print("Error Lexico: ", c)
+                consola.insert('1.0', "Error Lexico: "+c+"\n")
 
 
             posActual += 1
 
     #-----------------------estado L
-    def estadoL(self, posActual):
+    def estadoL(self, posActual, consola):
         if(posActual+1 < len(self.cadena)-1):
             c=self.cadena[posActual+1]
             self.bitacora += "->estadoL"
             if c == '/':
                 self.addToken(Tipo.ASTERISCO, "*")
                 self.posicionCar += 1
-                self.estadoM(self.posicionCar)
+                self.estadoM(self.posicionCar, consola)
+            else:
+                self.pos_errores.append(posActual)
+                self.addError(self.columna,self.fila, "Error, No se terminan los comentarios con */")
+                print("Error, No se terminan los comentarios con */")
+                consola.insert('1.0', "Error, No se terminan los comentarios con */")
+
         
 
     #-----------------------estado M
-    def estadoM(self, posActual):
+    def estadoM(self, posActual, consola):
         c=self.cadena[posActual]
         self.bitacora += "->estadoM"
         if c== '/':
@@ -326,6 +360,11 @@ class ScannerCss :
            # for i in range(0,len(self.listaTokens)):
            #    valor = self.listaTokens[i].getValor()
            #   print(valor)
+        else:
+                self.pos_errores.append(posActual)
+                self.addError(self.columna,self.fila, "Error, No se terminan los comentarios con */")
+                print("Error, No se terminan los comentarios con */")
+                consola.insert('1.0', "Error, No se terminan los comentarios con */")
             
         
 

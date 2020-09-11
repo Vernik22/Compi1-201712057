@@ -39,7 +39,7 @@ ER:
 
 palabras reservadas:---------
 var
-continiu
+continue
 break
 return
 if
@@ -59,7 +59,25 @@ UNDEFINED
 TYPEOF
 VOID
 console
-
+CONST= 53
+    CASE= 54
+    CATCH= 55
+    DEFAULT= 56
+    EXPORT= 57
+    EXTENDS= 58
+    FINALLY= 59
+    IMPORT= 60
+    IN= 61
+    INSTANCEOF = 62
+    SWITCH= 63
+    THIS= 64
+    THROW= 65
+    TRY= 66
+    WITH= 67
+    STATIC= 68
+    PRIVATE= 69
+    PROTECTED= 70
+    PUBLIC= 71
 
 ----------------------------------------------------------------------------
 Comentarios '/'.'/' [letra|digito|simbolo]* #
@@ -72,4 +90,4 @@ numeros     -? digito+ '.'? digito* #
 
 --------------------
 simbolos aceptados 
-/ * : ; . " +  - =  &   |   () {} []  < > '  ` ! ~
+/ * : ; . " +  - =  &   |   () {} []  < > '  ` ! ~ %

@@ -79,11 +79,12 @@ class Grafico:
         #print(self.texto)
 
     def analisar(self):
+        self.txtConsola.delete('1.0',END)
         entrada = self.txtEntrada.get('1.0', END)
         scaner = ScannerCss()
-        retorno = scaner.estadoA(entrada)
-        self.txtConsola.delete('1.0',END)   
-        self.txtConsola.insert('1.0',retorno)
+        retorno = scaner.estadoA(entrada, self.txtConsola)
+        #self.txtConsola.delete('1.0',END)   
+        self.txtConsola.insert(END,retorno)
         messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
 
     

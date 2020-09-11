@@ -28,6 +28,8 @@ class Tipo(Enum):
     CORCHETEIZQ= 24
     CORCHETEDER= 25
     EÑE= 26
+    DPUNTOS = 72
+    
 
     #Reservadas --------------------------------------
     VAR = 27
