@@ -1,7 +1,12 @@
 
 ER para:
-etiquetas
+id/etiquetas
 cadenas
-imagenes        *
-hipervinculos   *
-estilos         *
+simbolos
+comentario
+
+
+
+
+simbolos 
+<> / " = - !

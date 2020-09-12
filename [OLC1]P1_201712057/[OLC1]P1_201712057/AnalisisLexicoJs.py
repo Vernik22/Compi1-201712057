@@ -6,6 +6,7 @@ from tkinter import *
 class ScannerJs:
     listaTokens = list()
     listaErrores = list()
+    pos_errores = list()
     lexema = ""
     posicionCar = 0
     fila= 1
@@ -14,6 +15,7 @@ class ScannerJs:
     def __init__(self):
         self.listaErrores = list()
         self.listaTokens = list()
+        self.pos_errores= list()
         lexema = ""
         posicionCar = 0
         fila= 1
@@ -85,12 +87,14 @@ class ScannerJs:
                 self.addToken(Tipo.MENORQ, "<")
             elif self.caracterActual == "!":
                 self.addToken(Tipo.ADMIRACION, "!")
-            elif self.caracterActual == "~":
-                self.addToken(Tipo.EÑE, "~")
+            #elif self.caracterActual == "~":
+            #    self.addToken(Tipo.EÑE, "~")
             elif self.caracterActual == "%":
                 self.addToken(Tipo.PORCENTAJE, "%")
             elif self.caracterActual == "_":
                 self.addToken(Tipo.GUIONBAJO, "_")
+            elif self.caracterActual == ",":
+                self.addToken(Tipo.COMA, ",")
 
 
             #estado A a estado G (Numeros)
@@ -172,7 +176,7 @@ class ScannerJs:
 
     #----------------------Estado C
     def estadoC(self, posActual, fin, consola):
-         c=''
+        c=''
         while posActual < fin:
             c= self.cadena[posActual]
             if c.isalpha():
@@ -211,7 +215,7 @@ class ScannerJs:
 
     #--------------------Estado D
     def estadoD(self,posActual,consola):
-         c=''
+        c=''
         while posActual < fin:
             c= self.cadena[posActual]
             self.caracterActual = self.cadena[self.posicionCar]
@@ -221,30 +225,24 @@ class ScannerJs:
             posActual +=1 #incremento contador while
 
     #--------------------Estado E
-    def estadoE(self,posActual,consola):
-         c=''
+    def estadoE(self,posActual,fin,consola):
+        c=''
         while posActual < fin:
             c= self.cadena[posActual]
-            self.caracterActual = self.cadena[self.posicionCar]
+            
+            self.lexema +=c
+            if(posActual+1 == fin):
 
-
-
-            posActual +=1 #incremento contador while
+                self.addToken(Tipo.CADENA, self.lexema)
+                self.lexema = ""
+            
+            posActual += 1
 
     #------------------------Estado F
-    def estadoF(self,posActual,consola):
-         c=''
-        while posActual < fin:
-            c= self.cadena[posActual]
-            self.caracterActual = self.cadena[self.posicionCar]
-
-
-
-            posActual +=1 #incremento contador while
-
+   
     #-------------------------Estado G
     def estadoG(self, posActual, fin, consola):
-         c=''
+        c=''
         while posActual < fin:
             c= self.cadena[posActual]
             if c.isnumeric():
@@ -313,7 +311,7 @@ class ScannerJs:
 
     #------------------------Estado K
     def estadoK(self, posActual, fin, consola):
-         c=''
+        c=''
         while posActual < fin:
             c= self.cadena[posActual]
             
@@ -336,7 +334,7 @@ class ScannerJs:
     def estadoL(self,posActual,consola):
         if(posActual+1 < len(self.cadena)-1):
             c=self.cadena[posActual+1]
-            self.bitacora += "->estadoL"
+            
             if c == '/':
                 self.addToken(Tipo.ASTERISCO, "*")
                 self.posicionCar += 1
@@ -368,7 +366,7 @@ class ScannerJs:
     def getSizeLexema(self, posInicial):
         longitud = 0
         for i in range(posInicial, len(self.cadena)-1):
-            if self.cadena[i] == " " or self.cadena[i] == "{" or self.cadena[i] == "}" or self.cadena[i] == "(" or self.cadena[i] == ")" or self.cadena[i] == "," or self.cadena[i] == ";" or self.cadena[i] == ":"or self.cadena[i] == "\"" or self.cadena[i] == "'" or self.cadena[i] == "`" or self.cadena[i] == "[" or self.cadena[i] == "]" or self.cadena[i] == "*" or self.cadena[i] == "+" or self.cadena[i] == "="or self.cadena[i] == "&" or self.cadena[i] == "|" or self.cadena[i] == "<" or self.cadena[i] == ">" or self.cadena[i] == "!" or self.cadena[i] == "~" or self.cadena[i] == "\n" or self.cadena[i] == "\t" or self.cadena[i] == "\r":# or self.entrada[i] == "$":
+            if self.cadena[i] == " " or self.cadena[i] == "{" or self.cadena[i] == "}" or self.cadena[i] == "(" or self.cadena[i] == ")" or self.cadena[i] == "," or self.cadena[i] == "." or self.cadena[i] == ";" or self.cadena[i] == ":"or self.cadena[i] == "\"" or self.cadena[i] == "'" or self.cadena[i] == "`" or self.cadena[i] == "[" or self.cadena[i] == "]" or self.cadena[i] == "*" or self.cadena[i] == "+" or self.cadena[i] == "="or self.cadena[i] == "&" or self.cadena[i] == "|" or self.cadena[i] == "<" or self.cadena[i] == ">" or self.cadena[i] == "!" or self.cadena[i] == "~" or self.cadena[i] == "\n" or self.cadena[i] == "\t" or self.cadena[i] == "\r":# or self.entrada[i] == "$":
                 if self.cadena[i]=="\n":
                     self.fila += 1
                 break
@@ -418,9 +416,7 @@ class ScannerJs:
         self.listaErrores.append(nuevo)
         #puede que tenga que agregar algo
 
-    def graficar(self):
-        #algo
-
+    
     def reservadas(self, palabra):
         if palabra.lower() =="var":
             self.addToken(Tipo.VAR , "var")

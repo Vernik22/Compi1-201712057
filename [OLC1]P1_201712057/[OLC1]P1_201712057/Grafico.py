@@ -4,6 +4,7 @@ from tkinter import filedialog      # filechooser
 from tkinter import scrolledtext    # textarea
 from tkinter import messagebox      # message box
 from AnalisisLexicoCss import ScannerCss
+from AnalisisLexicoJs import ScannerJs
 
 class Grafico:
 
@@ -81,7 +82,8 @@ class Grafico:
     def analisar(self):
         self.txtConsola.delete('1.0',END)
         entrada = self.txtEntrada.get('1.0', END)
-        scaner = ScannerCss()
+        #scaner = ScannerCss()
+        scaner = ScannerJs()
         retorno = scaner.estadoA(entrada, self.txtConsola)
         #self.txtConsola.delete('1.0',END)   
         self.txtConsola.insert(END,retorno)
