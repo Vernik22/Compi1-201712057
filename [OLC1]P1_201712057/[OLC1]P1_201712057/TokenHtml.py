@@ -49,6 +49,7 @@ class Tipo(Enum):
     ID= 40
     CADENA= 41
     COMENTARIO= 42
+    NINGUNO = 43
 
 
 class Token:

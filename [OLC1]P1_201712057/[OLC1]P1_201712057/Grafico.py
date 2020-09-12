@@ -3,8 +3,10 @@ from tkinter import Menu    #menu
 from tkinter import filedialog      # filechooser
 from tkinter import scrolledtext    # textarea
 from tkinter import messagebox      # message box
+from tkinter import ttk             #combobox
 from AnalisisLexicoCss import ScannerCss
 from AnalisisLexicoJs import ScannerJs
+from AnalisisLexicoHtml import ScannerHtml
 
 class Grafico:
 
@@ -54,7 +56,7 @@ class Grafico:
         self.labelConsola = Label(self.ventana,text='Consola',bg='#F5A903')
 
         self.txtEntrada = scrolledtext.ScrolledText(self.ventana, width=115,height=18)
-        self.txtEntrada.place(x=12, y=20)
+        self.txtEntrada.place(x=12, y=30)
         self.labelEntrada.place(x=12, y=1)
         
         self.txtConsola = scrolledtext.ScrolledText(self.ventana, width=115,height=10)
@@ -63,6 +65,10 @@ class Grafico:
 
         self.analiButton = Button(self.ventana, text= 'Analizar', padx= 25, pady=12, bg= 'grey',fg='white', command = self.analisar)
         self.analiButton.place(x=455, y=335)
+
+        self.combo = ttk.Combobox(self.ventana,state="readonly",values= ["Elegir Lenguaje","Css","Js", "Html", "Rtm"] )
+        self.combo.current(0)
+        self.combo.place(x=455 ,y=3)
 
         self.ventana.mainloop()
 
@@ -80,16 +86,29 @@ class Grafico:
         #print(self.texto)
 
     def analisar(self):
+        valor= self.combo.get()
         self.txtConsola.delete('1.0',END)
         entrada = self.txtEntrada.get('1.0', END)
-        #scaner = ScannerCss()
-        scaner = ScannerJs()
-        retorno = scaner.estadoA(entrada, self.txtConsola)
-        #self.txtConsola.delete('1.0',END)   
-        self.txtConsola.insert(END,retorno)
-        messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
+        if valor.lower() =="css":
+            scaner = ScannerCss()
+            retorno = scaner.estadoA(entrada, self.txtConsola)
+            self.txtConsola.insert(END,retorno)
+            messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
+        elif valor.lower() =="js":
+            scaner = ScannerJs()
+            retorno = scaner.estadoA(entrada, self.txtConsola)
+            self.txtConsola.insert(END,retorno)
+            messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
+        elif valor.lower() =="html":
+            scaner = ScannerHtml()
+            retorno = scaner.estadoA(entrada, self.txtConsola)
+            self.txtConsola.insert(END,retorno)
+            messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
+        #elif valor.lower()=="rtm":
+            #scaner = ScannerCss()
+            #scaner = ScannerJs()
+            #scaner = ScannerHtml()
+            #retorno = scaner.estadoA(entrada, self.txtConsola)
+            #self.txtConsola.delete('1.0',END) 
 
-    
-        
-    
-    
+                
