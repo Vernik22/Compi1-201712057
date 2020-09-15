@@ -2,6 +2,8 @@ from TokenCss import Token
 from TokenCss import Tipo
 from TokenCss import Error
 from tkinter import *
+from ReporteHtml import reporteHtml
+import os
 
 class ScannerCss :
     listaTokens = list()
@@ -13,6 +15,7 @@ class ScannerCss :
     posicionCar = 0
     fila= 1
     columna=1
+    cadena=""
 
     def __init__(self):
         self.listaErrores = list()
@@ -24,14 +27,25 @@ class ScannerCss :
         posicionCar = 0
         fila= 1
         columna=1
+        cadena=""
+
+    def borrarTokenYErrores(self):
+        if os.path.isfile("C:/Users/LENOVO/Desktop/Tokens.html"):
+            os.remove("C:/Users/LENOVO/Desktop/Tokens.html")
+
+        if os.path.isfile("C:/Users/LENOVO/Desktop/reporteErrores.html"):
+            os.remove("C:/Users/LENOVO/Desktop/reporteErrores.html")
 
     def reporteBitacora(self):
         return self.bitacora
 
+    def getFilas(self):
+        return self.fila
     #----------------------estado A 
     def estadoA(self,entrada, consola):
         self.cadena = entrada + "$"
         self.caracterActual = ""
+        self.borrarTokenYErrores()
 
         
         while self.posicionCar < len(self.cadena):
@@ -114,8 +128,12 @@ class ScannerCss :
             else:                    
                 # S0 -> FIN_CADENA
                 if self.caracterActual == "$" and self.posicionCar == len(self.cadena)-1:
+                    reporte = reporteHtml()
                     if len(self.listaErrores) > 0:
+                        reporte.vistaTokens(self.listaTokens)    
+                        reporte.reporteEnHtml(self.listaErrores)
                         return "corregir los errores"
+                    reporte.vistaTokens(self.listaTokens)
                     return "analisis exitoso...!!!"
                 #  S0 -> ERROR_LEXICO
                 else:
@@ -131,8 +149,12 @@ class ScannerCss :
 
 
         if len(self.listaErrores)>0:
+            reporte = reporteHtml() 
+            reporte.reporteEnHtml(self.listaErrores)
+            reporte.vistaTokens(self.listaTokens)
             return "La entrada que ingresaste fue: Exiten Errores Lexicos" 
         else:
+            reporte.vistaTokens(self.listaTokens)
             return "La entrada que ingresaste fue:" + self.cadena + "\n Analisis Exitoso"
 
     #-----------------------estado B
@@ -412,6 +434,18 @@ class ScannerCss :
         self.listaErrores.append(nuevo)
         #puede que tenga que agregar algo
 
+    def rutaDestino(self):
+        cadenas= self.cadena.split("\n")
+        for i in range(0, len(cadenas)):
+            manejar = cadenas[i]
+            if manejar.lower().find("pathw")>=0:
+                print(manejar.lower().find("pathw"))
+                path=manejar.split(' ')
+                for o in range(0, len(path)):
+                    if path[o].lower().find("c")>=0:
+                        return path[o]
+                
+        
 
     def reservadas(self, palabra):
         if palabra.lower() =="color":

@@ -21,10 +21,20 @@ class ScannerJs:
         fila= 1
         columna=1
 
+    def getFilas(self):
+        return self.fila
+    def borrarTokenYErrores(self):
+        if os.path.isfile("C:/Users/LENOVO/Desktop/Tokens.html"):
+            os.remove("C:/Users/LENOVO/Desktop/Tokens.html")
+
+        if os.path.isfile("C:/Users/LENOVO/Desktop/reporteErrores.html"):
+            os.remove("C:/Users/LENOVO/Desktop/reporteErrores.html")
+
     #---------------------------Estado A
     def estadoA(self, entrada, consola):
         self.cadena = entrada + "$"
         self.caracterActual = ""
+        self.borrarTokenYErrores()
         while self.posicionCar < len(self.cadena):
             self.caracterActual = self.cadena[self.posicionCar]
 
@@ -122,8 +132,12 @@ class ScannerJs:
             else:                    
                 # S0 -> FIN_CADENA
                 if self.caracterActual == "$" and self.posicionCar == len(self.cadena)-1:
+                    reporte = reporteHtml()
                     if len(self.listaErrores) > 0:
+                        reporte.vistaTokens(self.listaTokens)    
+                        reporte.reporteEnHtml(self.listaErrores)
                         return "corregir los errores"
+                    reporte.vistaTokens(self.listaTokens)
                     return "analisis exitoso...!!!"
                 #  S0 -> ERROR_LEXICO
                 else:
@@ -140,8 +154,12 @@ class ScannerJs:
             self.posicionCar +=1 #incremento contador while
         
         if len(self.listaErrores)>0:
+            reporte = reporteHtml() 
+            reporte.reporteEnHtml(self.listaErrores)
+            reporte.vistaTokens(self.listaTokens)
             return "La entrada que ingresaste fue: Exiten Errores Lexicos" 
         else:
+            reporte.vistaTokens(self.listaTokens)
             return "La entrada que ingresaste fue:" + self.cadena + "\n Analisis Exitoso"
 
     #----------------------Estado B
