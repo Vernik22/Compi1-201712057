@@ -3,6 +3,7 @@ from TokenJs import Token
 from TokenJs import Tipo
 from tkinter import *
 from ReporteHtml import reporteHtml
+from CorreccionErrores import Correccion
 import os
 
 class ScannerJs:
@@ -171,15 +172,18 @@ class ScannerJs:
                 # S0 -> FIN_CADENA
                 if self.caracterActual == "$" and self.posicionCar == len(self.cadena)-1:
                     reporte = reporteHtml()
+                    correccion = Correccion()
                     if len(self.listaErrores) > 0:
                         reporte.vistaTokens(self.listaTokens,self.rutaDestino1)    
                         reporte.reporteEnHtml(self.listaErrores,self.rutaDestino1)
+                        correccion.eliminarC(self.rutaDestino1,entrada,"js",self.pos_errores)
                         return "corregir los errores"
                     reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
                     return "analisis exitoso...!!!"
                 #  S0 -> ERROR_LEXICO
                 else:
                     self.addError(self.columna,self.fila, self.caracterActual)
+                    self.pos_errores.append(self.posicionCar)
                     print("Error Lexico: ", self.caracterActual)
                     consola.insert('1.0', "Error Lexico: "+self.caracterActual+"\n")
                     for i in range(0,len(self.listaErrores)):
@@ -193,8 +197,10 @@ class ScannerJs:
         
         if len(self.listaErrores)>0:
             reporte = reporteHtml() 
+            correccion= Correccion()
             reporte.reporteEnHtml(self.listaErrores,self.rutaDestino1)
             reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
+            correccion.eliminarC(self.rutaDestino1,entrada,"js",self.pos_errores)
             return "La entrada que ingresaste fue: Exiten Errores Lexicos" 
         else:
             reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
@@ -226,13 +232,14 @@ class ScannerJs:
             self.posicionCar = self.posicionCar +sizeComentario
 
         else:
-            if self.banderaComentario:
-                self.primerComentario+= "B->EE[label=\""+c+"\"] "
-                self.banderaComentario=False
-            self.pos_errores.append(posActual)
-            self.addError(self.columna,self.fila, c)
-            print("Error Lexico: ", c)
-            consola.insert('1.0', "Error Lexico: "+c+"\n")
+            if c!= "\n":
+                if self.banderaComentario:
+                    self.primerComentario+= "B->EE[label=\""+c+"\"] "
+                    self.banderaComentario=False
+                self.pos_errores.append(posActual)
+                self.addError(self.columna,self.fila, c)
+                print("Error Lexico: ", c)
+                consola.insert('1.0', "Error Lexico: "+c+"\n")
         
 
             
