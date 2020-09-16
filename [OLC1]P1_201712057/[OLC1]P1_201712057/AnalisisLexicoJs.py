@@ -136,8 +136,8 @@ class ScannerJs:
                 self.addToken(Tipo.ADMIRACION, "!")
             #elif self.caracterActual == "~":
             #    self.addToken(Tipo.EÑE, "~")
-            elif self.caracterActual == "%":
-                self.addToken(Tipo.PORCENTAJE, "%")
+            #elif self.caracterActual == "%":
+            #    self.addToken(Tipo.PORCENTAJE, "%")
             elif self.caracterActual == "_":
                 self.addToken(Tipo.GUIONBAJO, "_")
             elif self.caracterActual == ",":
@@ -203,6 +203,7 @@ class ScannerJs:
             correccion.eliminarC(self.rutaDestino1,entrada,"js",self.pos_errores)
             return "La entrada que ingresaste fue: Exiten Errores Lexicos" 
         else:
+            correccion= Correccion()
             reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
             return "La entrada que ingresaste fue:" + self.cadena + "\n Analisis Exitoso"
 

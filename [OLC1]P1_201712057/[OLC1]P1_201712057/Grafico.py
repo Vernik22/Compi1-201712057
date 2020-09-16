@@ -7,11 +7,12 @@ from tkinter import ttk             #combobox
 from AnalisisLexicoCss import ScannerCss
 from AnalisisLexicoJs import ScannerJs
 from AnalisisLexicoHtml import ScannerHtml
+from AnalisisLexicoRmt import ScannerRmt
 from ReporteArbol import Rparbol
 import webbrowser
 import os
 from EnumerarLineas import TextLineNumbers
-from PIL import Image
+from PIL import Image, ImageTk
 
 class Grafico:
     bitacora=""
@@ -43,7 +44,7 @@ class Grafico:
         self.archivo_item.add_separator()
         self.archivo_item.add_command(label="Guardar Como", command=self.abrir)
         self.archivo_item.add_separator()
-        self.archivo_item.add_command(label="Ejecutar Analisis", command=self.abrir)
+        self.archivo_item.add_command(label="Ejecutar Analisis", command = self.analisar)
         self.archivo_item.add_separator()
         self.archivo_item.add_command(label="Salir", command=self.ventana.destroy)
 
@@ -80,7 +81,7 @@ class Grafico:
 
         #self.txtFilas = scrolledtext.ScrolledText(self.ventana,width=20, heigh= 18) 
         self.txtFilas.place(x=12, y= 30, width= 25 , height=293)
-        self.txtConsola = scrolledtext.ScrolledText(self.ventana, width=115,height=10)
+        self.txtConsola = scrolledtext.ScrolledText(self.ventana, width=70,height=10)
         self.txtConsola.place(x=12, y=390)
         self.labelConsola.place(x=12, y=370 )
 
@@ -90,6 +91,8 @@ class Grafico:
         self.combo = ttk.Combobox(self.ventana,state="readonly",values= ["Elegir Lenguaje","Css","Js", "Html", "Rtm"] )
         self.combo.current(0)
         self.combo.place(x=455 ,y=3)
+
+        
 
         #self.txtEntrada.bind("<Key>", self.onPressDelay)
         #self.txtEntrada.bind("<Button-1>", self.numberLines.redraw)
@@ -155,12 +158,11 @@ class Grafico:
             self.pathD(self.rutaDestino)
             self.txtConsola.insert(END,retorno)
             messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
-        #elif valor.lower()=="rtm":
-            #scaner = ScannerCss()
-            #scaner = ScannerJs()
-            #scaner = ScannerHtml()
-            #retorno = scaner.estadoA(entrada, self.txtConsola)
-            #self.txtConsola.delete('1.0',END) 
+        elif valor.lower()=="rtm":
+            scaner = ScannerRmt()
+            retorno = scaner.estadoA(entrada, self.txtConsola)
+            self.txtConsola.insert(END,retorno)
+            messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
 
     def repBitacora(self):
         self.txtConsola.insert(END,"\n ************************-REPORTE BITACORA-*********************\n")
@@ -189,17 +191,37 @@ class Grafico:
         if os.path.isdir(self.rutaDestino):
             arbol= Rparbol()
             #arbol.graficar()
-            arbol.comando(self.rutaDestino,self.grafoCadena,"primerCadena")
-            arbol.comando(self.rutaDestino,self.grafoComentario,"primerComentario")
-            arbol.comando(self.rutaDestino,self.grafoNumero,"primerNumero")
-            self.abrirImagen("primerCadena")
-            self.abrirImagen("primerComentario")
-            self.abrirImagen("primerNumero")
+            cadenaGrafo= self.grafoCadena+ " "+self.grafoComentario+" "+self.grafoNumero
+            arbol.comando(self.rutaDestino,cadenaGrafo,"reporteArbol")
+            #arbol.comando(self.rutaDestino,self.grafoComentario,"primerComentario")
+            #arbol.comando(self.rutaDestino,self.grafoNumero,"primerNumero")
+            self.abrirImagen("reporteArbol")
+            #self.abrirImagen("primerComentario")
+            #self.abrirImagen("primerNumero")
         
     def abrirImagen(self, img):
         if os.path.isfile(self.rutaDestino+"/"+img+".png"):
             ruta=(self.rutaDestino+"/"+img+".png")
             im= Image.open(ruta)
             im.show()
+
+            #im = PhotoImage(file=ruta)
+            #widget = self.labelImg(self.ventana, image=im).pack()
+
+            #im = im.resize((400, 260), Image.ANTIALIAS)
+            #im = ImageTk.PhotoImage(im)
+            #self.labelImg.config(image=im)
+            
+            o_size=im.size
+            f_size=(450,230)
+            factor = min(float(f_size[1])/o_size[1], float(f_size[0])/o_size[0])
+            width = int(o_size[0] * factor)
+            height = int(o_size[1] * factor)
+            rImg= im.resize((width, height), Image.ANTIALIAS)
+            rImg = ImageTk.PhotoImage(rImg)
+            lblImage=Label(self.ventana,image=rImg).place(x=610,y=370)
+            self.ventana.mainloop()
+
+            
 
                             

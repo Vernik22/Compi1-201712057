@@ -30,7 +30,7 @@ class ScannerHtml:
         return self.fila
 
     def borrarTokenYErrores(self):
-        self.rutaDestino1=rutaDestino()
+        self.rutaDestino1=self.rutaDestino()
         if os.path.isfile(self.rutaDestino1+"Tokens.html"):
             os.remove(self.rutaDestino1+"Tokens.html")
 
@@ -127,6 +127,7 @@ class ScannerHtml:
             correccion.eliminarC(self.rutaDestino1,entrada,"html",self.pos_errores)
             return "La entrada que ingresaste fue: Exiten Errores Lexicos" 
         else:
+            reporte = reporteHtml()
             reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
             return "La entrada que ingresaste fue:" + self.cadena + "\n Analisis Exitoso"
 

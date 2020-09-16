@@ -15,7 +15,7 @@ class Correccion:
 
             while posicionCar < len(recorrido):
 
-                for i in range(0, len(posiciones)-1):
+                for i in range(0, len(posiciones)):
                     if posiciones[i]==posicionCar:                
                         break
                 else:

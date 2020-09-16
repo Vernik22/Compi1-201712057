@@ -33,7 +33,7 @@ class ScannerCss :
         rutaDestino1=""
 
     def borrarTokenYErrores(self):
-        self.rutaDestino1=rutaDestino()
+        self.rutaDestino1=self.rutaDestino()
         if os.path.isfile(self.rutaDestino1+"Tokens.html"):
             os.remove(self.rutaDestino1+"Tokens.html")
 
@@ -54,40 +54,42 @@ class ScannerCss :
         
         while self.posicionCar < len(self.cadena):
             self.caracterActual = self.cadena[self.posicionCar]
-            self.bitacora +=" ->estadoA"
+            
 
             #estado A a estado B para comentarios
             if self.caracterActual == "/":
+                self.bitacora +=" ->estadoA->B[/]\n"
                # self.addToken(Tipo.DIAGONAL, "/")  #mandar a estado B por comentario
                 self.estadoB(self.posicionCar, consola)
             elif self.caracterActual == "{":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[{]\n"
                 self.addToken(Tipo.LLAVEIZQ, "{")
             elif self.caracterActual == "}":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[}]\n"
                 self.addToken(Tipo.LLAVEDER, "}")
             elif self.caracterActual == ":":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[:]\n"
                 self.addToken(Tipo.DPUNTOS, ":")
             elif self.caracterActual == ";":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[;]\n"
                 self.addToken(Tipo.PCOMA, ";")
             elif self.caracterActual == ",":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[,]\n"
                 self.addToken(Tipo.COMA, ",")
             elif self.caracterActual == ".":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[.]\n"
                 self.addToken(Tipo.PUNTO, ".")
             elif self.caracterActual == "#":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[#]\n"
                 self.addToken(Tipo.NUMERAL, "#")
             elif self.caracterActual == "(":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[(]\n"
                 self.addToken(Tipo.PARENTESISIZQ, "(")
             elif self.caracterActual == ")":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[)]\n"
                 self.addToken(Tipo.PARENTESISDER, ")")
             elif self.caracterActual == '"':
+                self.bitacora +=" ->estadoA->E[\"]\n"
                 self.addToken(Tipo.COMILLAS, '"')
                 self.posicionCar+=1
                 sizeCadena= self.getSizeCadena(self.posicionCar)
@@ -95,23 +97,25 @@ class ScannerCss :
                 self.posicionCar = self.posicionCar + sizeCadena
                 self.estadoI(self.posicionCar, consola)
             elif self.caracterActual == "*":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[*]\n"
                 self.addToken(Tipo.ASTERISCO, "*")
             elif self.caracterActual == "-":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[-]\n"
                 self.addToken(Tipo.GUION, "-") #mandar a estado F por numero negativo
             elif self.caracterActual == "%":
-                self.bitacora +=" ->estadoD"
+                self.bitacora +=" ->estadoA->#D[%]\n"
                 self.addToken(Tipo.PORCENTAJE , "%")
 
             #estado A a estado G (Numeros)
             elif self.caracterActual.isnumeric():            
+                self.bitacora +=" ->estadoA->#G[Num]\n"
                 sizeLexema = self.getSizeLexema(self.posicionCar)
                 self.estadoG(self.posicionCar,self.posicionCar+sizeLexema , consola)
                 self.posicionCar = self.posicionCar + sizeLexema
 
             #estado A a estado C (Reservadas e IDs)
             elif self.caracterActual.isalpha():
+                self.bitacora +=" ->estadoA->#C[Let]\n"
                 sizeLexema = self.getSizeLexema(self.posicionCar)
                 self.estadoC(self.posicionCar,self.posicionCar+sizeLexema, consola)
                 #self.reservadas(posicionCar, posicionCar+sizeLexema)
@@ -163,14 +167,16 @@ class ScannerCss :
             correccion.eliminarC(self.rutaDestino1,entrada,"css",self.pos_errores)
             return "La entrada que ingresaste fue: Exiten Errores Lexicos" 
         else:
+            reporte = reporteHtml()
             reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
             return "La entrada que ingresaste fue:" + self.cadena + "\n Analisis Exitoso"
 
     #-----------------------estado B
     def estadoB(self,posActual,consola):
         c=self.cadena[posActual+1]
-        self.bitacora += "->estadoB"
+        
         if c == '*':
+            self.bitacora +=" ->estadoB->H[*]\n"
             self.addToken(Tipo.DIAGONAL, "/")
             self.addToken(Tipo.ASTERISCO, "*")
             self.posicionCar = posActual+2
@@ -181,6 +187,7 @@ class ScannerCss :
             #print("va a L con "+c)
             self.estadoL(self.posicionCar, consola)
         else:
+            self.bitacora +=" ->estadoB->EE["+c+"]\n"
             self.pos_errores.append(posActual)
             self.addError(self.columna,self.fila, c)
             print("Error Lexico: ", c)
@@ -192,9 +199,10 @@ class ScannerCss :
         c=''
         while posActual < fin:
             c= self.cadena[posActual]
-            self.bitacora += "-> estadoC"
+            
 
             if c.isalpha():
+                self.bitacora +=" ->estadoC->#C["+c+"]\n"
                 self.lexema += c
                 if(posActual+1 == fin):
                     if(self.reservadas(self.lexema)!=True):
@@ -202,24 +210,28 @@ class ScannerCss :
                         #print("paso por ID")
                     self.lexema = ""
             elif c.isnumeric():
+                self.bitacora +=" ->estadoC->#C["+c+"]\n"
                 self.lexema += c
                 if(posActual+1 == fin):
                     if(self.reservadas(self.lexema)!=True):
                         self.addToken(Tipo.ID, self.lexema)
                     self.lexema = ""
             elif c == '-':
+                self.bitacora +=" ->estadoC->#C[-]\n"
                 self.lexema += c
                 if(posActual+1 == fin):
                     if(self.reservadas(self.lexema)!=True):
                         self.addToken(Tipo.ID, self.lexema)
                     self.lexema = ""
             elif c == '#':
+                self.bitacora +=" ->estadoC->#C[#]\n"
                 self.lexema += c
                 if(posActual+1 == fin):
                     if(self.reservadas(self.lexema)!=True):
                         self.addToken(Tipo.ID, self.lexema)
                     self.lexema = ""
             else:
+                self.bitacora +=" ->estadoC->EE["+c+"]\n"
                 self.pos_errores.append(posActual)
                 self.addError(self.columna,self.fila, c)
                 print("Error Lexico: ", c)
@@ -231,7 +243,7 @@ class ScannerCss :
     def estadoE(self, posActual, fin, consola):
         c=''
         while posActual < fin:
-            self.bitacora += "->estadoE"
+            self.bitacora +=" ->estadoE->E["+c+"]\n"
             c= self.cadena[posActual]
 
             self.lexema +=c
@@ -246,20 +258,23 @@ class ScannerCss :
         c=''
         while posActual < fin:            
             c= self.cadena[posActual]
-            self.bitacora += "-> estadoG"
+            
 
             if c.isnumeric():
+                self.bitacora +=" ->estadoG->#G["+c+"]\n"
                 self.lexema += c
                 if(posActual+1 == fin):
                     self.addToken(Tipo.NUMERO, self.lexema)
                     self.lexema = ""
             elif c =='.':
                 #mandar al estado J
+                self.bitacora +=" ->estadoG->#J[.]\n"
                 self.lexema += c
                 posActual += 1
                 self.estadoJ(posActual,fin, consola)
                 break
             elif c =='%':
+                self.bitacora +=" ->estadoG->#K[%]\n"
                 #mandar al estado K
                 self.estadoK(posActual,fin, consola)
                 
@@ -270,6 +285,7 @@ class ScannerCss :
                 break
             # estadoG -> Error Lexico o manejar los hexadecimales
             else:
+                self.bitacora +=" ->estadoG->EE["+c+"]\n"
                 self.pos_errores.append(posActual)
                 self.addError(self.columna,self.fila, c)
                 print("Error Lexico: ", c)
@@ -281,7 +297,7 @@ class ScannerCss :
         c=''
         while posActual < fin:
             c= self.cadena[posActual]
-            self.bitacora += "-> estadoH"
+            self.bitacora +=" ->estadoH->H["+c+"]\n"
 
             self.lexema +=c
             if(posActual+1 == fin):
@@ -294,8 +310,9 @@ class ScannerCss :
     #-----------------------estado I
     def estadoI(self, posActual, consola):
         c=self.cadena[posActual]
-        self.bitacora += "->estadoI"
+        
         if c == '"':
+            self.bitacora +=" ->estadoE->#I[\"]\n"
             self.addToken(Tipo.COMILLAS, "\"")
             self.posicionCar += 1
             #for i in range(0,len(self.listaTokens)):
@@ -308,9 +325,10 @@ class ScannerCss :
         c=''
         while posActual < fin:
             c= self.cadena[posActual]
-            self.bitacora += "-> estadoJ"
+            
 
             if c.isnumeric():
+                self.bitacora +=" ->estadoJ->#J["+c+"]\n"
                 self.lexema += c
                 if(posActual+1 == fin):
                     self.addToken(Tipo.NUMERO, self.lexema)
@@ -327,11 +345,13 @@ class ScannerCss :
                 break
 
             elif c =='%':
+                self.bitacora +=" ->estadoJ->#K[%]\n"
                 #mandar al estado K
                 self.estadoK(posActual,fin, consola)
 
             # estadoG -> Error Lexico o manejar los hexadecimales
             else:
+                self.bitacora +=" ->estadoJ->EE["+c+"]\n"
                 self.pos_errores.append(posActual)
                 self.addError(self.columna,self.fila, c)
                 print("Error Lexico: ", c)
@@ -345,8 +365,9 @@ class ScannerCss :
         c=''
         while posActual < fin:
             c= self.cadena[posActual]
-            self.bitacora += "-> estado K"
+            
             if c == '%':
+                
                 self.addToken(Tipo.PORCENTAJE , "%")
                 if(posActual+1 == fin):
                     self.addToken(Tipo.NUMERO, self.lexema)
@@ -365,12 +386,14 @@ class ScannerCss :
     def estadoL(self, posActual, consola):
         if(posActual+1 < len(self.cadena)-1):
             c=self.cadena[posActual+1]
-            self.bitacora += "->estadoL"
-            if c == '/':
+            
+            if c == '*':
+                self.bitacora +=" ->estadoH->L[*]\n"
                 self.addToken(Tipo.ASTERISCO, "*")
                 self.posicionCar += 1
                 self.estadoM(self.posicionCar, consola)
             else:
+                self.bitacora +=" ->estadoH->EE["+c+"]\n"
                 self.pos_errores.append(posActual)
                 self.addError(self.columna,self.fila, "Error, No se terminan los comentarios con */")
                 print("Error, No se terminan los comentarios con */")
@@ -381,8 +404,9 @@ class ScannerCss :
     #-----------------------estado M
     def estadoM(self, posActual, consola):
         c=self.cadena[posActual]
-        self.bitacora += "->estadoM"
+        
         if c== '/':
+            self.bitacora +=" ->estadoL->#M[/]\n"
             self.addToken(Tipo.DIAGONAL, "/")
             self.posicionCar += 1
             c=self.cadena[self.posicionCar]
@@ -392,10 +416,11 @@ class ScannerCss :
            #    valor = self.listaTokens[i].getValor()
            #   print(valor)
         else:
-                self.pos_errores.append(posActual)
-                self.addError(self.columna,self.fila, "Error, No se terminan los comentarios con */")
-                print("Error, No se terminan los comentarios con */")
-                consola.insert('1.0', "Error, No se terminan los comentarios con */")
+            self.bitacora +=" ->estadoH->EE["+c+"]\n"
+            self.pos_errores.append(posActual)
+            self.addError(self.columna,self.fila, "Error, No se terminan los comentarios con */")
+            print("Error, No se terminan los comentarios con */")
+            consola.insert('1.0', "Error, No se terminan los comentarios con */")
             
         
 
