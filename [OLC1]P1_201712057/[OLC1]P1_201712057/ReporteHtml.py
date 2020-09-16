@@ -1,4 +1,4 @@
-
+import os
 
 class reporteHtml:
     columna= 0
@@ -12,10 +12,15 @@ class reporteHtml:
         self.listaErrores= list()
         directorio= ""
 
-    def reporteEnHtml(self, lista):
-
+    def pathD(self,ruta):
+        print(str(ruta))
+        if not os.path.isdir(str(ruta)):
+            os.makedirs(str(ruta))
+            
+    def reporteEnHtml(self, lista,ruta):
+        self.pathD(ruta)
         self.listaErrores = lista 
-        f = open("C:/Users/LENOVO/Desktop/reporteErrores.html","w+")
+        f = open(ruta+"/reporteErrores.html","w+")
 
         mensaje = """<html>
 
@@ -50,8 +55,9 @@ class reporteHtml:
         f.close()
 
 
-    def vistaTokens(self, lista):
-        f = open("C:/Users/LENOVO/Desktop/Tokens.html","w+")
+    def vistaTokens(self, lista,ruta):
+        self.pathD(ruta)
+        f = open(ruta+"/Tokens.html","w+")
 
         mensaje = """<html>
 

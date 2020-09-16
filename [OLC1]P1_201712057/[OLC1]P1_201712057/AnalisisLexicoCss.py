@@ -16,6 +16,7 @@ class ScannerCss :
     fila= 1
     columna=1
     cadena=""
+    rutaDestino1=""
 
     def __init__(self):
         self.listaErrores = list()
@@ -28,13 +29,15 @@ class ScannerCss :
         fila= 1
         columna=1
         cadena=""
+        rutaDestino1=""
 
     def borrarTokenYErrores(self):
-        if os.path.isfile("C:/Users/LENOVO/Desktop/Tokens.html"):
-            os.remove("C:/Users/LENOVO/Desktop/Tokens.html")
+        self.rutaDestino1=rutaDestino()
+        if os.path.isfile(self.rutaDestino1+"Tokens.html"):
+            os.remove(self.rutaDestino1+"Tokens.html")
 
-        if os.path.isfile("C:/Users/LENOVO/Desktop/reporteErrores.html"):
-            os.remove("C:/Users/LENOVO/Desktop/reporteErrores.html")
+        if os.path.isfile(self.rutaDestino1+"reporteErrores.html"):
+            os.remove(self.rutaDestino1+"reporteErrores.html")
 
     def reporteBitacora(self):
         return self.bitacora
@@ -130,10 +133,10 @@ class ScannerCss :
                 if self.caracterActual == "$" and self.posicionCar == len(self.cadena)-1:
                     reporte = reporteHtml()
                     if len(self.listaErrores) > 0:
-                        reporte.vistaTokens(self.listaTokens)    
-                        reporte.reporteEnHtml(self.listaErrores)
+                        reporte.vistaTokens(self.listaTokens,self.rutaDestino1)    
+                        reporte.reporteEnHtml(self.listaErrores,self.rutaDestino1)
                         return "corregir los errores"
-                    reporte.vistaTokens(self.listaTokens)
+                    reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
                     return "analisis exitoso...!!!"
                 #  S0 -> ERROR_LEXICO
                 else:
@@ -150,11 +153,11 @@ class ScannerCss :
 
         if len(self.listaErrores)>0:
             reporte = reporteHtml() 
-            reporte.reporteEnHtml(self.listaErrores)
-            reporte.vistaTokens(self.listaTokens)
+            reporte.reporteEnHtml(self.listaErrores,self.rutaDestino1)
+            reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
             return "La entrada que ingresaste fue: Exiten Errores Lexicos" 
         else:
-            reporte.vistaTokens(self.listaTokens)
+            reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
             return "La entrada que ingresaste fue:" + self.cadena + "\n Analisis Exitoso"
 
     #-----------------------estado B
@@ -443,6 +446,11 @@ class ScannerCss :
                 path=manejar.split(' ')
                 for o in range(0, len(path)):
                     if path[o].lower().find("c")>=0:
+                        if path[o].lower().find("pathw")>=0:
+                            pathDef=path[o].lower().split("pathw:")
+                            self.rutaDestino1=pathDef[1]
+                            return pathDef[1]
+                        self.rutaDestino1=path[o]
                         return path[o]
                 
         

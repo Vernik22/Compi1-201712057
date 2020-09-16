@@ -1,4 +1,4 @@
-from tkinter import * #ventana
+from tkinter import *  #ventana
 from tkinter import Menu    #menu
 from tkinter import filedialog      # filechooser
 from tkinter import scrolledtext    # textarea
@@ -7,14 +7,25 @@ from tkinter import ttk             #combobox
 from AnalisisLexicoCss import ScannerCss
 from AnalisisLexicoJs import ScannerJs
 from AnalisisLexicoHtml import ScannerHtml
+from ReporteArbol import Rparbol
 import webbrowser
 import os
+from EnumerarLineas import TextLineNumbers
+from PIL import Image
 
 class Grafico:
     bitacora=""
     filas=1
+    rutaDestino=""
+    grafoCadena=""
+    grafoComentario=""
+    grafoNumero=""
     def __init__(self):
         repBitacora=""
+        rutaDestino=""
+        grafoCadena=""
+        grafoComentario=""
+        grafoNumero=""
         self.ventana = Tk()
         self.ventana.geometry("1000x600")
         self.ventana.title(" [OLC1] Proyecto 1" )
@@ -44,7 +55,7 @@ class Grafico:
         self.reportes_item = Menu(self.ventana)
         self.reportes_item.add_command(label="Bitacora", command= self.repBitacora)
         self.reportes_item.add_separator()
-        self.reportes_item.add_command(label="Arbol")
+        self.reportes_item.add_command(label="Arbol", command=self.repoArbol)
         self.reportes_item.add_separator()
 
 
@@ -59,6 +70,9 @@ class Grafico:
         self.txtConsola = Entry(self.ventana,width=10)
         self.labelConsola = Label(self.ventana,text='Consola',bg='#F5A903')
         self.txtFilas = Entry(self.ventana, width=5 )
+        #self.numberLines = TextLineNumbers(self.ventana, width=25,height=18, bg='#313335')
+        #self.numberLines.attach(self.txtEntrada)
+        #self.numberLines.pack(side=LEFT, fill=Y, padx=(5, 0))
 
         self.txtEntrada = scrolledtext.ScrolledText(self.ventana, width=112,height=18)
         self.txtEntrada.place(x=42, y=30)
@@ -77,9 +91,25 @@ class Grafico:
         self.combo.current(0)
         self.combo.place(x=455 ,y=3)
 
+        #self.txtEntrada.bind("<Key>", self.onPressDelay)
+        #self.txtEntrada.bind("<Button-1>", self.numberLines.redraw)
+        #self.scrollbar.bind("<Button-1>", self.onScrollPress)
+        #self.txtEntrada.bind("<MouseWheel>", self.onPressDelay)
+
         self.ventana.mainloop()
 
-    
+    def onScrollPress(self, *args):
+        self.scrollbar.bind("<B1-Motion>", self.numberLines.redraw)
+
+    def onScrollRelease(self, *args):
+        self.scrollbar.unbind("<B1-Motion>", self.numberLines.redraw)
+
+    def onPressDelay(self, *args):
+        self.after(2, self.numberLines.redraw)
+
+    def redraw(self):
+        self.numberLines.redraw()
+
     def abrir(self) :
         self.txtEntrada.delete('1.0',END)           #Limpia el area de texto
         self.archivo = filedialog.askopenfilename(filetypes=[("Archivos Aceptados",".css .js .html .rmt"),("CSS","*.css"),("JavaScript","*.js"),("HTML",".html"),("Aritmetico JS",".rmt")]) #archivo es la Path
@@ -102,20 +132,27 @@ class Grafico:
             self.bitacora = scaner.reporteBitacora()
             self.filas= scaner.getFilas()
             self.llenarFilas()
-            rutaDestino=scaner.rutaDestino()
-            self.pathD(rutaDestino)
+            self.rutaDestino=scaner.rutaDestino()
+            self.pathD(self.rutaDestino)
             self.txtConsola.insert(END,retorno)
             messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
         elif valor.lower() =="js":
             scaner = ScannerJs()
             retorno = scaner.estadoA(entrada, self.txtConsola)
             fila= scaner.getFilas()
+            self.rutaDestino=scaner.rutaDestino()
+            self.grafoCadena= scaner.getPrimerCadena()
+            self.grafoComentario= scaner.getPrimerComentario()
+            self.grafoNumero= scaner.getPrimerNumero()
+            self.pathD(self.rutaDestino)
             self.txtConsola.insert(END,retorno)
             messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
         elif valor.lower() =="html":
             scaner = ScannerHtml()
             retorno = scaner.estadoA(entrada, self.txtConsola)
             fila= scaner.getFilas()
+            self.rutaDestino=scaner.rutaDestino()
+            self.pathD(self.rutaDestino)
             self.txtConsola.insert(END,retorno)
             messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
         #elif valor.lower()=="rtm":
@@ -130,14 +167,15 @@ class Grafico:
         self.txtConsola.insert(END,self.bitacora)
 
     def abrirTokens(self):
-        if os.path.isfile("C:/Users/LENOVO/Desktop/Tokens.html"):
-            nombreArchivo = "C:/Users/LENOVO/Desktop/Tokens.html"
+        if os.path.isfile(self.rutaDestino+"/Tokens.html"):
+            nombreArchivo = self.rutaDestino+"/Tokens.html"
             webbrowser.open_new_tab(nombreArchivo)
        
     def abrirErrores(self):
-        if os.path.isfile("C:/Users/LENOVO/Desktop/reporteErrores.html"):
-            nombreArchivo = "C:/Users/LENOVO/Desktop/reporteErrores.html"
+        if os.path.isfile(self.rutaDestino+"/reporteErrores.html"):
+            nombreArchivo = self.rutaDestino+"/reporteErrores.html"
             webbrowser.open_new_tab(nombreArchivo)
+
     def pathD(self,ruta):
         print(str(ruta))
         if not os.path.isdir(str(ruta)):
@@ -146,5 +184,22 @@ class Grafico:
     def llenarFilas(self):
         for i in range(0,self.filas):
             self.txtFilas.insert("0",str(i+1)+"\n")
+
+    def repoArbol(self):
+        if os.path.isdir(self.rutaDestino):
+            arbol= Rparbol()
+            #arbol.graficar()
+            arbol.comando(self.rutaDestino,self.grafoCadena,"primerCadena")
+            arbol.comando(self.rutaDestino,self.grafoComentario,"primerComentario")
+            arbol.comando(self.rutaDestino,self.grafoNumero,"primerNumero")
+            self.abrirImagen("primerCadena")
+            self.abrirImagen("primerComentario")
+            self.abrirImagen("primerNumero")
+        
+    def abrirImagen(self, img):
+        if os.path.isfile(self.rutaDestino+"/"+img+".png"):
+            ruta=(self.rutaDestino+"/"+img+".png")
+            im= Image.open(ruta)
+            im.show()
 
                             

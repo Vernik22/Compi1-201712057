@@ -2,34 +2,62 @@ from TokenJs import Error
 from TokenJs import Token
 from TokenJs import Tipo
 from tkinter import *
+from ReporteHtml import reporteHtml
+import os
 
 class ScannerJs:
     listaTokens = list()
     listaErrores = list()
     pos_errores = list()
+    primerCadena= ""
+    primerComentario= ""
+    primerNumero= ""
+    banderaCadena= True
+    banderaComentario=True
+    banderaNumero=True
+
     lexema = ""
     posicionCar = 0
     fila= 1
     columna=1
+    rutaDestino1=""
 
     def __init__(self):
         self.listaErrores = list()
         self.listaTokens = list()
         self.pos_errores= list()
+        self.primerCadena= ""
+        self.primerComentario= ""
+        self.primerNumero= ""
+        self.banderaCadena= True
+        self.banderaComentario=True
+        self.banderaNumero=True
+
         lexema = ""
         posicionCar = 0
         fila= 1
         columna=1
+        self.rutaDestino1=""
 
     def getFilas(self):
         return self.fila
+
+    def getPrimerCadena(self):
+        return self.primerCadena
+    def getPrimerComentario(self):
+        return self.primerComentario
+    def getPrimerNumero(self):
+        return self.primerNumero
+
     def borrarTokenYErrores(self):
-        if os.path.isfile("C:/Users/LENOVO/Desktop/Tokens.html"):
-            os.remove("C:/Users/LENOVO/Desktop/Tokens.html")
+        self.rutaDestino1= self.rutaDestino()
+        if os.path.isfile(self.rutaDestino1+"Tokens.html"):
+            os.remove(self.rutaDestino1+"Tokens.html")
 
-        if os.path.isfile("C:/Users/LENOVO/Desktop/reporteErrores.html"):
-            os.remove("C:/Users/LENOVO/Desktop/reporteErrores.html")
+        if os.path.isfile(self.rutaDestino1+"reporteErrores.html"):
+            os.remove(self.rutaDestino1+"reporteErrores.html")
 
+    
     #---------------------------Estado A
     def estadoA(self, entrada, consola):
         self.cadena = entrada + "$"
@@ -39,6 +67,8 @@ class ScannerJs:
             self.caracterActual = self.cadena[self.posicionCar]
 
             if self.caracterActual == "/":
+                if self.banderaComentario:
+                    self.primerComentario+= "label=\"Estados Comentario\" A->B[label=\"/\"] "
                 self.estadoB(self.posicionCar, consola)
             elif self.caracterActual == "*":
                 self.addToken(Tipo.ASTERISCO, "*")
@@ -49,6 +79,8 @@ class ScannerJs:
             elif self.caracterActual == ".":
                 self.addToken(Tipo.PUNTO, ".")
             elif self.caracterActual == "\"":
+                if self.banderaCadena:
+                    self.primerCadena+= "label=\"Estados Cadena\" A->E[label=\"C\"] "
                 self.addToken(Tipo.COMILLAS, "\"")
                 self.posicionCar+=1
                 sizeCadena= self.getSizeCadena(self.posicionCar)
@@ -56,6 +88,8 @@ class ScannerJs:
                 self.posicionCar = self.posicionCar + sizeCadena
                 self.estadoJ(self.posicionCar, consola)
             elif self.caracterActual == "'":
+                if self.banderaCadena:
+                    self.primerCadena+= "label=\"Estados Cadena\" A->E[label=\"\CS\"] "
                 self.addToken(Tipo.COMILLASIMPLE, "'")
                 self.posicionCar+=1
                 sizeCadena= self.getSizeCadena(self.posicionCar)
@@ -63,6 +97,8 @@ class ScannerJs:
                 self.posicionCar = self.posicionCar + sizeCadena
                 self.estadoJ(self.posicionCar, consola)
             elif self.caracterActual == "`":
+                if self.banderaCadena:
+                    self.primerCadena+= "label=\"Estados Cadena\" A->E[label=\"T\"] "
                 self.addToken(Tipo.TILDE, "`")
                 self.posicionCar+=1
                 sizeCadena= self.getSizeCadena(self.posicionCar)
@@ -108,7 +144,9 @@ class ScannerJs:
 
 
             #estado A a estado G (Numeros)
-            elif self.caracterActual.isnumeric():            
+            elif self.caracterActual.isnumeric():    
+                if self.banderaNumero:
+                    self.primerNumero+= "label=\"Estados Numero\" A->G[label=\""+self.caracterActual+"\"] "        
                 sizeLexema = self.getSizeLexema(self.posicionCar)
                 self.estadoG(self.posicionCar,self.posicionCar+sizeLexema , consola)
                 self.posicionCar = self.posicionCar + sizeLexema
@@ -134,10 +172,10 @@ class ScannerJs:
                 if self.caracterActual == "$" and self.posicionCar == len(self.cadena)-1:
                     reporte = reporteHtml()
                     if len(self.listaErrores) > 0:
-                        reporte.vistaTokens(self.listaTokens)    
-                        reporte.reporteEnHtml(self.listaErrores)
+                        reporte.vistaTokens(self.listaTokens,self.rutaDestino1)    
+                        reporte.reporteEnHtml(self.listaErrores,self.rutaDestino1)
                         return "corregir los errores"
-                    reporte.vistaTokens(self.listaTokens)
+                    reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
                     return "analisis exitoso...!!!"
                 #  S0 -> ERROR_LEXICO
                 else:
@@ -155,17 +193,19 @@ class ScannerJs:
         
         if len(self.listaErrores)>0:
             reporte = reporteHtml() 
-            reporte.reporteEnHtml(self.listaErrores)
-            reporte.vistaTokens(self.listaTokens)
+            reporte.reporteEnHtml(self.listaErrores,self.rutaDestino1)
+            reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
             return "La entrada que ingresaste fue: Exiten Errores Lexicos" 
         else:
-            reporte.vistaTokens(self.listaTokens)
+            reporte.vistaTokens(self.listaTokens,self.rutaDestino1)
             return "La entrada que ingresaste fue:" + self.cadena + "\n Analisis Exitoso"
 
     #----------------------Estado B
     def estadoB(self,posActual,consola):
         c=self.cadena[posActual+1]              
         if c == '*':
+            if self.banderaComentario:
+                self.primerComentario+= "B->H[label=\"*\"] "
             self.addToken(Tipo.DIAGONAL, "/")
             self.addToken(Tipo.ASTERISCO, "*")
             self.posicionCar = posActual+2
@@ -176,6 +216,8 @@ class ScannerJs:
             #print("va a L con "+c)
             self.estadoL(self.posicionCar, consola)
         elif c == '/':
+            if self.banderaComentario:
+                self.primerComentario+= "B->I[label=\"/\"] "
             self.addToken(Tipo.DIAGONAL, "/")
             self.addToken(Tipo.DIAGONAL, "/")
             self.posicionCar = posActual+2
@@ -184,6 +226,9 @@ class ScannerJs:
             self.posicionCar = self.posicionCar +sizeComentario
 
         else:
+            if self.banderaComentario:
+                self.primerComentario+= "B->EE[label=\""+c+"\"] "
+                self.banderaComentario=False
             self.pos_errores.append(posActual)
             self.addError(self.columna,self.fila, c)
             print("Error Lexico: ", c)
@@ -249,8 +294,10 @@ class ScannerJs:
             c= self.cadena[posActual]
             
             self.lexema +=c
+            
             if(posActual+1 == fin):
-
+                if self.banderaCadena:
+                    self.primerCadena+= "E->E[label=\""+self.lexema+"\"] "
                 self.addToken(Tipo.CADENA, self.lexema)
                 self.lexema = ""
             
@@ -266,15 +313,24 @@ class ScannerJs:
             if c.isnumeric():
                 self.lexema += c
                 if(posActual+1 == fin):
+                    if self.banderaNumero:
+                        self.primerNumero+= "G->G[label=\""+self.lexema+"\"] "
+                        self.banderaNumero=False
                     self.addToken(Tipo.NUMERO, self.lexema)
                     self.lexema = ""
             elif c =='.':
                 #mandar al estado J
+                if self.banderaNumero:
+                        self.primerNumero+= "G->G[label=\""+self.lexema+"\"] "
+                        self.primerNumero+= "G->K[label=\""+c+"\"] "
                 self.lexema += c
                 posActual += 1
                 self.estadoK(posActual,fin, consola)
                 break
             else:
+                if self.banderaNumero:
+                    self.primerNumero+= "G->EE[label=\""+c+"\"] "
+                    self.banderaNumero=False
                 self.pos_errores.append(posActual)
                 self.addError(self.columna,self.fila, c)
                 print("Error Lexico: ", c)
@@ -290,7 +346,8 @@ class ScannerJs:
             
             self.lexema +=c
             if(posActual+1 == fin):
-
+                if self.banderaComentario:
+                    self.primerComentario+= "H->H[label=\""+self.lexema+"\"] "
                 self.addToken(Tipo.COMENTARIO, self.lexema)
                 self.lexema = ""
             
@@ -304,7 +361,9 @@ class ScannerJs:
             
             self.lexema +=c
             if(posActual+1 == fin):
-
+                if self.banderaComentario:
+                    self.primerComentario+= "I->I[label=\""+self.lexema+"\"] "
+                    self.banderaComentario=False
                 self.addToken(Tipo.COMENTARIO, self.lexema)
                 self.lexema = ""
             
@@ -314,15 +373,24 @@ class ScannerJs:
     def estadoJ(self,posActual,consola):
         c=self.cadena[posActual]
         if c == '"':
+            if self.banderaCadena:
+                self.primerCadena+= "E->J[label=\"C\"] "
+                self.banderaCadena=False
             self.addToken(Tipo.COMILLAS, "\"")
             self.posicionCar += 1
             #for i in range(0,len(self.listaTokens)):
             #    valor = self.listaTokens[i].getValor()
             #    print(valor)
         elif c=='\'':
+            if self.banderaCadena:
+                self.primerCadena+= "E->J[label=\"CS\"] "
+                self.banderaCadena=False
             self.addToken(Tipo.COMILLASIMPLE, "'")
             self.posicionCar += 1
         elif c=='`':
+            if self.banderaCadena:
+                self.primerCadena+= "E->J[label=\"T\"] "
+                self.banderaCadena=False
             self.addToken(Tipo.TILDE, "`")
             self.posicionCar += 1
 
@@ -336,11 +404,17 @@ class ScannerJs:
             if c.isnumeric():
                 self.lexema += c
                 if(posActual+1 == fin):
+                    if self.banderaNumero:
+                        self.primerNumero+= "K->K[label=\""+self.lexema+"\"] "
+                        self.banderaNumero=False
                     self.addToken(Tipo.NUMERO, self.lexema)
                     self.lexema = ""
             
             # estadoG -> Error Lexico o manejar los hexadecimales
             else:
+                if self.banderaNumero:
+                    self.primerNumero+= "K->EE[label=\""+c+"\"] "
+                    self.banderaNumero=False
                 self.pos_errores.append(posActual)
                 self.addError(self.columna,self.fila, c)
                 print("Error Lexico: ", c)
@@ -354,10 +428,15 @@ class ScannerJs:
             c=self.cadena[posActual+1]
             
             if c == '/':
+                if self.banderaComentario:
+                    self.primerComentario+= "H->L[label=\"*\"] "
                 self.addToken(Tipo.ASTERISCO, "*")
                 self.posicionCar += 1
                 self.estadoM(self.posicionCar, consola)
             else:
+                if self.banderaComentario:
+                    self.primerComentario+= "H->EE[label=\""+c+"\"] "
+                    self.banderaComentario=False
                 self.pos_errores.append(posActual)
                 self.addError(self.columna,self.fila, "Error, No se terminan los comentarios con */")
                 print("Error, No se terminan los comentarios con */")
@@ -367,6 +446,9 @@ class ScannerJs:
     def estadoM(self,posActual,consola):
         c=self.cadena[posActual]
         if c== '/':
+            if self.banderaComentario:
+                self.primerComentario+= "L->M[label=\"/\"] "
+                self.banderaComentario=False
             self.addToken(Tipo.DIAGONAL, "/")
             self.posicionCar += 1
             c=self.cadena[self.posicionCar]
@@ -376,6 +458,9 @@ class ScannerJs:
            #    valor = self.listaTokens[i].getValor()
            #   print(valor)
         else:
+                if self.banderaComentario:
+                    self.primerComentario+= "L->EE[label=\""+c+"\"] "
+                    self.banderaComentario=False
                 self.pos_errores.append(posActual)
                 self.addError(self.columna,self.fila, "Error, No se terminan los comentarios con */")
                 print("Error, No se terminan los comentarios con */")
@@ -434,7 +519,22 @@ class ScannerJs:
         self.listaErrores.append(nuevo)
         #puede que tenga que agregar algo
 
-    
+    def rutaDestino(self):
+        cadenas= self.cadena.split("\n")
+        for i in range(0, len(cadenas)):
+            manejar = cadenas[i]
+            if manejar.lower().find("pathw")>=0:
+                print(manejar.lower().find("pathw"))
+                path=manejar.split(' ')
+                for o in range(0, len(path)):
+                    if path[o].lower().find("c")>=0:
+                        if path[o].lower().find("pathw")>=0:
+                            pathDef=path[o].lower().split("pathw:")
+                            self.rutaDestino1= pathDef[1]
+                            return pathDef[1]
+                        self.rutaDestino1=path[o]
+                        return path[o]
+
     def reservadas(self, palabra):
         if palabra.lower() =="var":
             self.addToken(Tipo.VAR , "var")
