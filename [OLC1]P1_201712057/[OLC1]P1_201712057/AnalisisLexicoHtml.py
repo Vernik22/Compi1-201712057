@@ -52,11 +52,11 @@ class ScannerHtml:
                     self.addToken(Tipo.MENORQ,"<") 
             elif self.caracterActual ==">":
                 self.addToken(Tipo.MAYORQ, ">")
-                self.posicionCar +=1
-                sizeCadena = self.getSizeCadena(self.posicionCar)
-                self.estadoD(self.posicionCar, self.posicionCar+ sizeCadena, consola)
-                self.posicionCar = self.posicionCar + sizeCadena 
-                self.estadoF(self.posicionCar,consola)
+                #self.posicionCar +=1
+                #sizeCadena = self.getSizeCadena(self.posicionCar)
+                #self.estadoD(self.posicionCar, self.posicionCar+ sizeCadena, consola)
+                #self.posicionCar = self.posicionCar + sizeCadena 
+                #self.estadoF(self.posicionCar,consola)
             elif self.caracterActual == "/":
                 self.addToken(Tipo.DIAGONAL, "/")
             elif self.caracterActual == "\"":
@@ -72,6 +72,14 @@ class ScannerHtml:
                 self.addToken(Tipo.GUION, "-")
             elif self.caracterActual== "!":
                 self.addToken(Tipo.ADMIRACION, "!")
+            elif self.caracterActual== ".":
+                self.addToken(Tipo.PUNTO, ".")
+            elif self.caracterActual== ",":
+                self.addToken(Tipo.COMA, ",")
+            elif self.caracterActual== "(":
+                self.addToken(Tipo.PAR_IZQ, "(")
+            elif self.caracterActual== ")":
+                self.addToken(Tipo.PAR_DER, ")")
 
 
             #estado A a estado B (Reservadas e IDs)
@@ -81,6 +89,11 @@ class ScannerHtml:
                 #self.reservadas(posicionCar, posicionCar+sizeLexema)
                 self.posicionCar = self.posicionCar + sizeLexema -1
 
+            elif self.caracterActual.isnumeric():
+                sizeLexema = self.getSizeLexema(self.posicionCar)
+                self.estadoB(self.posicionCar,self.posicionCar+sizeLexema, consola)
+                #self.reservadas(posicionCar, posicionCar+sizeLexema)
+                self.posicionCar = self.posicionCar + sizeLexema -1
             
             
             #otros
@@ -141,20 +154,20 @@ class ScannerHtml:
                 self.lexema += c
                 if(posActual+1 == fin):
                     if(self.reservadas(self.lexema)!=True):
-                        self.addToken(Tipo.ID, self.lexema)
+                        self.addToken(Tipo.CADENA, self.lexema)
                         #print("paso por ID")
                     self.lexema = ""
             elif c.isnumeric():
                 self.lexema += c
                 if(posActual+1 == fin):
                     if(self.reservadas(self.lexema)!=True):
-                        self.addToken(Tipo.ID, self.lexema)
+                        self.addToken(Tipo.CADENA, self.lexema)
                     self.lexema = ""
             elif c == '-':
                 self.lexema += c
                 if(posActual+1 == fin):
                     if(self.reservadas(self.lexema)!=True):
-                        self.addToken(Tipo.ID, self.lexema)
+                        self.addToken(Tipo.CADENA, self.lexema)
                     self.lexema = ""
             else:
                 self.pos_errores.append(posActual)
@@ -287,7 +300,7 @@ class ScannerHtml:
                 self.columna=1
             if self.cadena[i] == "\"" :
                 break
-            elif self.cadena[i] == "<" and self.cadena[i+1] == "/":
+            elif self.cadena[i] == "<" or self.cadena[i+1] == "/":
                 break
             longitud+=1
         return longitud
@@ -295,7 +308,7 @@ class ScannerHtml:
     def getSizeLexema(self, posInicial):
         longitud = 0
         for i in range(posInicial, len(self.cadena)-1):
-            if self.cadena[i] == " "   or self.cadena[i] == "\"" or self.cadena[i] == "'" or self.cadena[i] == "=" or self.cadena[i] == "[" or self.cadena[i] == "]"   or self.cadena[i] == "<" or self.cadena[i] == ">" or self.cadena[i] == "!"  or self.cadena[i] == "\n" or self.cadena[i] == "\t" or self.cadena[i] == "\r":# or self.entrada[i] == "$":
+            if self.cadena[i] == " "   or self.cadena[i] == "\"" or self.cadena[i] == "'" or self.cadena[i] == ")" or self.cadena[i] == "(" or self.cadena[i] == "=" or self.cadena[i] == "[" or self.cadena[i] == "]"   or self.cadena[i] == "<" or self.cadena[i] == ">" or self.cadena[i] == "." or self.cadena[i] == "," or self.cadena[i] == "!"  or self.cadena[i] == "\n" or self.cadena[i] == "\t" or self.cadena[i] == "\r":# or self.entrada[i] == "$":
                 if self.cadena[i]=="\n":
                     self.fila += 1
                     self.columna=1

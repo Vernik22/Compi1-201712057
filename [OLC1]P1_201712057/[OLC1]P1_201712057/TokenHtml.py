@@ -9,6 +9,10 @@ class Tipo(Enum):
     ASIGNACION= 5
     GUION= 6
     ADMIRACION= 7
+    PUNTO=44
+    COMA=45
+    PAR_IZQ=46
+    PAR_DER=47
 
     #reservadas
     HTML= 8

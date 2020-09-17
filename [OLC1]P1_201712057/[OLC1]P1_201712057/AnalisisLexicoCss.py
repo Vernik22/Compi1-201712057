@@ -388,7 +388,7 @@ class ScannerCss :
     #-----------------------estado L
     def estadoL(self, posActual, consola):
         if(posActual+1 < len(self.cadena)-1):
-            c=self.cadena[posActual+1]
+            c=self.cadena[posActual]
             
             if c == '*':
                 self.bitacora +=" ->estadoH->L[*]\n"
