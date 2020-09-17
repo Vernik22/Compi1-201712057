@@ -22,12 +22,14 @@ class Grafico:
     grafoCadena=""
     grafoComentario=""
     grafoNumero=""
+    archivo=""
     def __init__(self):
         repBitacora=""
         rutaDestino=""
         grafoCadena=""
         grafoComentario=""
         grafoNumero=""
+        self.archivo=""
         self.ventana = Tk()
         self.ventana.geometry("1000x600")
         self.ventana.title(" [OLC1] Proyecto 1" )
@@ -37,13 +39,13 @@ class Grafico:
         self.menu = Menu(self.ventana)
 
         self.archivo_item = Menu(self.ventana)
-        self.archivo_item.add_command(label="Nuevo", command=self.abrir)
+        self.archivo_item.add_command(label="Nuevo", command=self.nuevo)
         self.archivo_item.add_separator()
         self.archivo_item.add_command(label="Abrir", command=self.abrir)
         self.archivo_item.add_separator()
-        self.archivo_item.add_command(label="Guardar", command=self.abrir)
+        self.archivo_item.add_command(label="Guardar", command=self.guardar)
         self.archivo_item.add_separator()
-        self.archivo_item.add_command(label="Guardar Como", command=self.abrir)
+        self.archivo_item.add_command(label="Guardar Como", command=self.guardarComo)
         self.archivo_item.add_separator()
         self.archivo_item.add_command(label="Ejecutar Analisis", command = self.analisar)
         self.archivo_item.add_separator()
@@ -164,13 +166,14 @@ class Grafico:
             retorno = scaner.estadoA(entrada, self.txtConsola)
             self.txtConsola.insert(END,retorno)
             listaTokens= scaner.getListaToken()
-            sintactic = SintacticoRmt(listaTokens)
-            sintactic.E()
-            errores = sintactic.getErrores()
-            if len(errores)== 0:
-                self.txtConsola.insert(END,"\nSintactico Correcto")
-            else:
-                self.txtConsola.insert(END,"\nSintactico Incorrecto")
+            if scaner.getListaErrores():
+                sintactic = SintacticoRmt(listaTokens)
+                sintactic.E()
+                errores = sintactic.getErrores()
+                if len(errores)== 0:
+                    self.txtConsola.insert(END,"\nSintactico Correcto")
+                else:
+                    self.txtConsola.insert(END,"\nSintactico Incorrecto")
             messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
 
     def repBitacora(self):
@@ -230,6 +233,30 @@ class Grafico:
             rImg = ImageTk.PhotoImage(rImg)
             lblImage=Label(self.ventana,image=rImg).place(x=610,y=370)
             self.ventana.mainloop()
+
+    def guardarComo(self):
+        self.archivo = filedialog.asksaveasfilename(filetypes=[("CSS","*.css"),("JavaScript","*.js"),("HTML",".html"),("Aritmetico JS",".rmt")],defaultextension= '.css') #archivo es la Path
+        if self.archivo != '':
+            f = open(self.archivo,"w+")   #se abre el archivo
+            mensaje= self.txtEntrada.get('1.0', END)
+            f.write(mensaje)
+            f.close()
+
+    def guardar(self):
+        if self.archivo =='':
+            self.guardarComo()
+        else:
+            f = open(self.archivo,"w+")   #se abre el archivo
+            mensaje= self.txtEntrada.get('1.0', END)
+            f.write(mensaje)
+            f.close()
+
+    def nuevo(self):
+        self.txtEntrada.delete('1.0',END) 
+        self.txtConsola.delete('1.0',END) 
+        self.archivo=""
+
+           
 
             
 

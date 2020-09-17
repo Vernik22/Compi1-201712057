@@ -16,6 +16,12 @@ class ScannerRmt:
         lexema = ""
         posicionCar = 0
 
+    def getListaErrores(self):
+        if len(self.listaErrores)==0:
+            return True
+        else:
+            return False
+
     #------------------------------Estado A
     def estadoA(self,entrada, consola):
         self.cadena = entrada + "$"
@@ -65,7 +71,7 @@ class ScannerRmt:
                     return "analisis exitoso...!!!"
                 #  S0 -> ERROR_LEXICO
                 else:
-                    
+                    self.addError(self.columna,self.fila, self.caracterActual)
                     print("Error Lexico: ", self.caracterActual)
                     consola.insert('1.0', "Error Lexico: "+self.caracterActual+"\n")
                     return "corregir los errores, incorrecto"

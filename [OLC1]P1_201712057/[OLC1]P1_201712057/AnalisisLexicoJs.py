@@ -163,8 +163,9 @@ class ScannerJs:
             elif self.caracterActual == " " or self.caracterActual == "\t" or self.caracterActual == "\r" or self.caracterActual == "\n":  
                 if self.caracterActual=="\n":
                     self.fila += 1
+                    self.columna=1
                 self.posicionCar += 1 #incremento del contador del while
-                
+                self.columna+=1
                 continue
             
             #manejo de Errores
@@ -192,7 +193,7 @@ class ScannerJs:
                         valor += str(self.listaErrores[i].getFila())
                         print(valor)
 
-
+            self.columna+=1
             self.posicionCar +=1 #incremento contador while
         
         if len(self.listaErrores)>0:
@@ -241,6 +242,7 @@ class ScannerJs:
                 self.addError(self.columna,self.fila, c)
                 print("Error Lexico: ", c)
                 consola.insert('1.0', "Error Lexico: "+c+"\n")
+        self.columna+=1
         
 
             
@@ -281,7 +283,7 @@ class ScannerJs:
                 print("Error Lexico: ", c)
                 consola.insert('1.0', "Error Lexico: "+c+"\n")
 
-
+            self.columna+=1
             posActual +=1 #incremento contador while
 
     #--------------------Estado D
@@ -292,7 +294,7 @@ class ScannerJs:
             self.caracterActual = self.cadena[self.posicionCar]
 
 
-
+            self.columna+=1
             posActual +=1 #incremento contador while
 
     #--------------------Estado E
@@ -308,7 +310,7 @@ class ScannerJs:
                     self.primerCadena+= "E->E[label=\""+self.lexema+"\"] "
                 self.addToken(Tipo.CADENA, self.lexema)
                 self.lexema = ""
-            
+            self.columna+=1
             posActual += 1
 
     #------------------------Estado F
@@ -343,7 +345,8 @@ class ScannerJs:
                 self.addError(self.columna,self.fila, c)
                 print("Error Lexico: ", c)
                 consola.insert('1.0', "Error Lexico: "+c+"\n")
-
+            
+            self.columna+=1
             posActual +=1 #incremento contador while
 
     #-------------------------Estado H
@@ -359,6 +362,7 @@ class ScannerJs:
                 self.addToken(Tipo.COMENTARIO, self.lexema)
                 self.lexema = ""
             
+            self.columna+=1
             posActual += 1
     
     #------------------------Estado I
@@ -375,6 +379,7 @@ class ScannerJs:
                 self.addToken(Tipo.COMENTARIO, self.lexema)
                 self.lexema = ""
             
+            self.columna+=1
             posActual += 1
 
     #------------------------Estado J
@@ -401,6 +406,8 @@ class ScannerJs:
                 self.banderaCadena=False
             self.addToken(Tipo.TILDE, "`")
             self.posicionCar += 1
+        
+        self.columna+=1
 
 
     #------------------------Estado K
@@ -428,6 +435,7 @@ class ScannerJs:
                 print("Error Lexico: ", c)
                 consola.insert('1.0', "Error Lexico: "+c+"\n")
 
+            self.columna+=1
             posActual +=1 #incremento contador while
             
     #----------------------Estado L
@@ -450,6 +458,8 @@ class ScannerJs:
                 print("Error, No se terminan los comentarios con */")
                 consola.insert('1.0', "Error, No se terminan los comentarios con */")
 
+            self.columna+=1
+
     #------------------------Estado M
     def estadoM(self,posActual,consola):
         c=self.cadena[posActual]
@@ -462,6 +472,7 @@ class ScannerJs:
             c=self.cadena[self.posicionCar]
             if c=="\n":
                     self.fila += 1
+                    self.columna=1
            # for i in range(0,len(self.listaTokens)):
            #    valor = self.listaTokens[i].getValor()
            #   print(valor)
@@ -474,12 +485,15 @@ class ScannerJs:
                 print("Error, No se terminan los comentarios con */")
                 consola.insert('1.0', "Error, No se terminan los comentarios con */")
 
+        self.columna+=1
+
     def getSizeLexema(self, posInicial):
         longitud = 0
         for i in range(posInicial, len(self.cadena)-1):
             if self.cadena[i] == " " or self.cadena[i] == "{" or self.cadena[i] == "}" or self.cadena[i] == "(" or self.cadena[i] == ")" or self.cadena[i] == "," or self.cadena[i] == "." or self.cadena[i] == ";" or self.cadena[i] == ":"or self.cadena[i] == "\"" or self.cadena[i] == "'" or self.cadena[i] == "`" or self.cadena[i] == "[" or self.cadena[i] == "]" or self.cadena[i] == "*" or self.cadena[i] == "+" or self.cadena[i] == "="or self.cadena[i] == "&" or self.cadena[i] == "|" or self.cadena[i] == "<" or self.cadena[i] == ">" or self.cadena[i] == "!" or self.cadena[i] == "~" or self.cadena[i] == "\n" or self.cadena[i] == "\t" or self.cadena[i] == "\r":# or self.entrada[i] == "$":
                 if self.cadena[i]=="\n":
                     self.fila += 1
+                    self.columna=1
                 break
             longitud+=1
         return longitud
@@ -489,6 +503,7 @@ class ScannerJs:
         for i in range(posInicial, len(self.cadena)-1):
             if self.cadena[i]=="\n":
                 self.fila += 1
+                self.columna=1
             if self.cadena[i] == "*" and self.cadena[i+1] == "/":
                 break
             longitud+=1
@@ -499,6 +514,7 @@ class ScannerJs:
         for i in range(posInicial, len(self.cadena)-1):
             if self.cadena[i]=="\n":
                 self.fila += 1
+                self.columna=1
                 break
             longitud+=1
         return longitud
@@ -508,6 +524,7 @@ class ScannerJs:
         for i in range(posInicial, len(self.cadena)-1):
             if self.cadena[i]=="\n":
                 self.fila += 1
+                self.columna=1
             if self.cadena[i] == "\"" or self.cadena[i] == "\'"or self.cadena[i] == "`":
                 break
             longitud+=1

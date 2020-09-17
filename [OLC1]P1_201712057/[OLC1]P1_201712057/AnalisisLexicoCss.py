@@ -128,6 +128,7 @@ class ScannerCss :
             elif self.caracterActual == " " or self.caracterActual == "\t" or self.caracterActual == "\r" or self.caracterActual == "\n":  
                 if self.caracterActual=="\n":
                     self.fila += 1
+                    self.columna =1
                 self.posicionCar += 1 #incremento del contador del while
                 
                 continue
@@ -156,6 +157,7 @@ class ScannerCss :
                         valor += str(self.listaErrores[i].getColumna())
                         valor += str(self.listaErrores[i].getFila())
                         print(valor)
+            self.columna+= 1
             self.posicionCar +=1 #incremento contador while
 
 
@@ -174,7 +176,7 @@ class ScannerCss :
     #-----------------------estado B
     def estadoB(self,posActual,consola):
         c=self.cadena[posActual+1]
-        
+        self.columna +=1
         if c == '*':
             self.bitacora +=" ->estadoB->H[*]\n"
             self.addToken(Tipo.DIAGONAL, "/")
@@ -237,7 +239,7 @@ class ScannerCss :
                 print("Error Lexico: ", c)
                 consola.insert('1.0', "Error Lexico: "+c+"\n")
 
-        
+            self.columna+=1
             posActual += 1
     #-----------------------estado E
     def estadoE(self, posActual, fin, consola):
@@ -251,6 +253,7 @@ class ScannerCss :
 
                 self.addToken(Tipo.CADENA, self.lexema)
                 self.lexema = ""
+            self.columna+=1
             posActual += 1
 
     #-----------------------estado G
@@ -290,7 +293,7 @@ class ScannerCss :
                 self.addError(self.columna,self.fila, c)
                 print("Error Lexico: ", c)
                 consola.insert('1.0', "Error Lexico: "+c+"\n")
-            
+            self.columna+=1
             posActual += 1
     #-----------------------estado H
     def estadoH(self, posActual, fin, consola):
@@ -304,13 +307,13 @@ class ScannerCss :
 
                 self.addToken(Tipo.COMENTARIO, self.lexema)
                 self.lexema = ""
-            
+            self.columna+=1
             posActual += 1
 
     #-----------------------estado I
     def estadoI(self, posActual, consola):
         c=self.cadena[posActual]
-        
+        self.columna+=1
         if c == '"':
             self.bitacora +=" ->estadoE->#I[\"]\n"
             self.addToken(Tipo.COMILLAS, "\"")
@@ -357,7 +360,7 @@ class ScannerCss :
                 print("Error Lexico: ", c)
                 consola.insert('1.0', "Error Lexico: "+c+"\n")
 
-
+            self.columna+=1
             posActual += 1
 
     #-----------------------estado K
@@ -379,7 +382,7 @@ class ScannerCss :
                 print("Error Lexico: ", c)
                 consola.insert('1.0', "Error Lexico: "+c+"\n")
 
-
+            self.columna+=1
             posActual += 1
 
     #-----------------------estado L
@@ -398,6 +401,7 @@ class ScannerCss :
                 self.addError(self.columna,self.fila, "Error, No se terminan los comentarios con */")
                 print("Error, No se terminan los comentarios con */")
                 consola.insert('1.0', "Error, No se terminan los comentarios con */")
+            self.columna+=1
 
         
 
@@ -412,6 +416,7 @@ class ScannerCss :
             c=self.cadena[self.posicionCar]
             if c=="\n":
                     self.fila += 1
+                    self.columna = 1
            # for i in range(0,len(self.listaTokens)):
            #    valor = self.listaTokens[i].getValor()
            #   print(valor)
@@ -421,6 +426,7 @@ class ScannerCss :
             self.addError(self.columna,self.fila, "Error, No se terminan los comentarios con */")
             print("Error, No se terminan los comentarios con */")
             consola.insert('1.0', "Error, No se terminan los comentarios con */")
+        self.columna+=1
             
         
 
@@ -430,6 +436,7 @@ class ScannerCss :
             if self.cadena[i] == " " or self.cadena[i] == "{" or self.cadena[i] == "}" or self.cadena[i] == "(" or self.cadena[i] == ")" or self.cadena[i] == "," or self.cadena[i] == ";" or self.cadena[i] == ":"or self.cadena[i] == "\"" or self.cadena[i] == "'"or self.cadena[i] == "\n" or self.cadena[i] == "\t" or self.cadena[i] == "\r":# or self.entrada[i] == "$":
                 if self.cadena[i]=="\n":
                     self.fila += 1
+                    self.columna =1
                 break
             longitud+=1
         return longitud
@@ -439,6 +446,7 @@ class ScannerCss :
         for i in range(posInicial, len(self.cadena)-1):
             if self.cadena[i]=="\n":
                     self.fila += 1
+                    self.columna =1
             if self.cadena[i] == "*" and self.cadena[i+1] == "/":
                 break
             longitud+=1
@@ -449,6 +457,7 @@ class ScannerCss :
         for i in range(posInicial, len(self.cadena)-1):
             if self.cadena[i]=="\n":
                     self.fila += 1
+                    self.columna= 1
             if self.cadena[i] == "\"" :
                 break
             longitud+=1

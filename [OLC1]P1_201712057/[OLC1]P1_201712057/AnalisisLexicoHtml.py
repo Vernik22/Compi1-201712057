@@ -87,6 +87,7 @@ class ScannerHtml:
             elif self.caracterActual == " " or self.caracterActual == "\t" or self.caracterActual == "\r" or self.caracterActual == "\n":  
                 if self.caracterActual=="\n":
                     self.fila += 1
+                    self.columna=1
                 self.posicionCar += 1 #incremento del contador del while
                 
                 continue
@@ -116,7 +117,7 @@ class ScannerHtml:
                         valor += str(self.listaErrores[i].getFila())
                         print(valor)
 
-
+            self.columna+=1
             self.posicionCar +=1 #incremento contador while
 
         if len(self.listaErrores)>0:
@@ -161,6 +162,7 @@ class ScannerHtml:
                 print("Error Lexico: ", c)
                 consola.insert('1.0', "Error Lexico: "+c+"\n")
 
+            self.columna+=1
             posActual +=1 
 
     #----------------------------Estado D
@@ -175,6 +177,7 @@ class ScannerHtml:
                 self.addToken(Tipo.CADENA, self.lexema)
                 self.lexema = ""
             
+            self.columna+=1
             posActual += 1
 
     #--------------------------Estado E
@@ -199,6 +202,7 @@ class ScannerHtml:
             self.addError(self.columna,self.fila, c)
             print("Error Lexico: ", c)
             consola.insert('1.0', "Error Lexico: "+c+"\n")
+        self.columna+=1
         
 
     #-------------------------Estado F
@@ -213,6 +217,7 @@ class ScannerHtml:
         elif c=='<':
             self.addToken(Tipo.MENORQ, "<")
             self.posicionCar += 1
+        self.columna+=1
         
     #--------------------------Estado G
     def estadoG(self,posActual, consola):
@@ -228,6 +233,7 @@ class ScannerHtml:
                 self.posicionCar = self.posicionCar +sizeComentario
                 #print("va a L con "+c)
                 self.estadoJ(self.posicionCar, consola)
+            self.columna+=1
 
     #-----------------------Estado I
     def estadoI(self,posActual, fin, consola):
@@ -241,6 +247,7 @@ class ScannerHtml:
                 self.addToken(Tipo.COMENTARIO, self.lexema)
                 self.lexema = ""
             
+            self.columna+=1
             posActual += 1
     
     #---------------------Estado J
@@ -256,6 +263,7 @@ class ScannerHtml:
                 if c=='>':
                     self.addToken(Tipo.MAYORQ, ">")
                     self.posicionCar +=1
+            self.columna+=1
 
 
 
@@ -264,6 +272,7 @@ class ScannerHtml:
         for i in range(posInicial, len(self.cadena)-1):
             if self.cadena[i]=="\n":
                 self.fila += 1
+                self.columna=1
             if self.cadena[i] == "-" and self.cadena[i+1] == "-" and self.cadena[i+2] == ">":
                 break
             longitud+=1
@@ -275,6 +284,7 @@ class ScannerHtml:
         for i in range(posInicial, len(self.cadena)-1):
             if self.cadena[i]=="\n":
                 self.fila += 1
+                self.columna=1
             if self.cadena[i] == "\"" :
                 break
             elif self.cadena[i] == "<" and self.cadena[i+1] == "/":
@@ -288,6 +298,7 @@ class ScannerHtml:
             if self.cadena[i] == " "   or self.cadena[i] == "\"" or self.cadena[i] == "'" or self.cadena[i] == "=" or self.cadena[i] == "[" or self.cadena[i] == "]"   or self.cadena[i] == "<" or self.cadena[i] == ">" or self.cadena[i] == "!"  or self.cadena[i] == "\n" or self.cadena[i] == "\t" or self.cadena[i] == "\r":# or self.entrada[i] == "$":
                 if self.cadena[i]=="\n":
                     self.fila += 1
+                    self.columna=1
                 break
             longitud+=1
         return longitud
