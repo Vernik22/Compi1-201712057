@@ -8,6 +8,7 @@ from AnalisisLexicoCss import ScannerCss
 from AnalisisLexicoJs import ScannerJs
 from AnalisisLexicoHtml import ScannerHtml
 from AnalisisLexicoRmt import ScannerRmt
+from AnalisisSintacticoRmt import SintacticoRmt
 from ReporteArbol import Rparbol
 import webbrowser
 import os
@@ -162,6 +163,14 @@ class Grafico:
             scaner = ScannerRmt()
             retorno = scaner.estadoA(entrada, self.txtConsola)
             self.txtConsola.insert(END,retorno)
+            listaTokens= scaner.getListaToken()
+            sintactic = SintacticoRmt(listaTokens)
+            sintactic.E()
+            errores = sintactic.getErrores()
+            if len(errores)== 0:
+                self.txtConsola.insert(END,"\nSintactico Correcto")
+            else:
+                self.txtConsola.insert(END,"\nSintactico Incorrecto")
             messagebox.showinfo('Proyecto-1', 'Analisis Finalizado')
 
     def repBitacora(self):

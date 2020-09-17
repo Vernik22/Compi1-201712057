@@ -12,6 +12,7 @@ class Tipo(Enum):
     PARENTESIS_DER= 9
 
     ID=11
+    ULTIMO=12
  
     NINGUNO=10
 

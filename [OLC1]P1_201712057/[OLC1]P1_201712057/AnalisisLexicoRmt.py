@@ -41,16 +41,15 @@ class ScannerRmt:
             elif self.caracterActual.isalpha():
                 sizeLexema = self.getSizeLexema(self.posicionCar)
                 self.estadoC(self.posicionCar, self.posicionCar + sizeLexema,consola)
-                self.posicionCar= self.posicionCar+sizeLexema
+                self.posicionCar= self.posicionCar+sizeLexema -1
 
             elif self.caracterActual.isnumeric():
                 sizeLexema = self.getSizeLexema(self.posicionCar)
                 self.estadoB(self.posicionCar,self.posicionCar+sizeLexema , consola)
-                self.posicionCar = self.posicionCar + sizeLexema
+                self.posicionCar = self.posicionCar + sizeLexema -1
 
             elif self.caracterActual == " " or self.caracterActual == "\t" or self.caracterActual == "\r" or self.caracterActual == "\n":  
-                if self.caracterActual=="\n":
-                    self.fila += 1
+                
                 self.posicionCar += 1 #incremento del contador del while
                 
                 continue
@@ -180,3 +179,6 @@ class ScannerRmt:
         nuevo = Error(columna, fila, valor)
         self.listaErrores.append(nuevo)
         #puede que tenga que agregar algo
+
+    def getListaToken(self):
+        return self.listaTokens
